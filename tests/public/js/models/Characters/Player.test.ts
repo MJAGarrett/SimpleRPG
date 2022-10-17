@@ -1,4 +1,4 @@
-import chai, { expect } from "chai";
+import { expect } from "chai";
 
 import Player from "../../../../../src/js/models/Characters/Player.js";
 import Sword from "../../../../../src/js/models/Items/Weapons/Sword.js";
@@ -17,29 +17,29 @@ describe("Player Class", () => {
 		});
 	
 		it("It should initialize health stat to 100", () => {
-			chai.expect(player.health).to.exist;
-			chai.expect(player.health).to.be.a("number");
-			chai.expect(player.health).to.equal(100);
+			expect(player.health).to.exist;
+			expect(player.health).to.be.a("number");
+			expect(player.health).to.equal(100);
 		});
 	
 		it("It should initialize inventory to an empty array", () => {
-			chai.expect(player.inventory).to.exist;
-			chai.expect(player.inventory).to.be.an("array");
+			expect(player.inventory).to.exist;
+			expect(player.inventory).to.be.an("array");
 		});
 	
 		it("it should initialize level to 1", () => {
-			chai.expect(player.level).to.exist;
-			chai.expect(player.level).to.equal(1);
+			expect(player.level).to.exist;
+			expect(player.level).to.equal(1);
 		});
 	
 		it("it should initialize experience points to 0", () => {
-			chai.expect(player.experience).to.exist;
-			chai.expect(player.experience).to.equal(0);
+			expect(player.experience).to.exist;
+			expect(player.experience).to.equal(0);
 		});
 
 		it("it should initialize equipment to an empty object", () => {
 			const stuff = player.equipment;
-			chai.expect(stuff).to.have.all.keys("headwear", "shirt", "footwear", "pants", "weapon");
+			expect(stuff).to.have.all.keys("headwear", "shirt", "footwear", "pants", "weapon");
 			const equipSlots: EquipSlot[] = Object.keys(stuff) as EquipSlot[];
 			for (const slot of equipSlots) {
 				expect(stuff[slot]).to.be.null;
@@ -57,19 +57,19 @@ describe("Player Class", () => {
 			swordBuilder = new WeaponBuilder(Sword);
 		});
 	
-		describe("addItem", () => {
+		describe("addItem()", () => {
 			it("It should add an inventory item to the player's inventory", () => {
-				chai.expect(player.getInventory().length).to.be.equal(0);
+				expect(player.getInventory().length).to.be.equal(0);
 	
 				const newSword = swordBuilder.build();
 				player.addItem(newSword);
 	
-				chai.expect(player.inventory.length).to.be.equal(1);
-				chai.expect(player.inventory[0]).to.be.equal(newSword);
+				expect(player.inventory.length).to.be.equal(1);
+				expect(player.inventory[0]).to.be.equal(newSword);
 			});
 		});
 	
-		describe("getInventory", () => {
+		describe("getInventory()", () => {
 			it("It should return an array of all items in the player's inventory", () => {
 				player.inventory = [];
 				for (let i = 0; i < 10; i++) {
