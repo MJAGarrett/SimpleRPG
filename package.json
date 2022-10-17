@@ -1,0 +1,30 @@
+{
+  "name": "simplerpg",
+  "version": "1.0.0",
+  "description": "A very simple rpg",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "type": "module",
+  "author": "Michael Garrett",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/cli": "^7.19.3",
+    "@babel/core": "^7.19.3",
+    "@babel/node": "^7.19.1",
+    "@babel/preset-env": "^7.19.4",
+    "@types/chai": "^4.3.3",
+    "@types/mocha": "^10.0.0",
+    "@types/sinon": "^10.0.13",
+    "@typescript-eslint/eslint-plugin": "^5.40.0",
+    "@typescript-eslint/parser": "^5.40.0",
+    "chai": "^4.3.6",
+    "eslint": "^8.25.0",
+    "mocha": "^10.1.0",
+    "prettier": "^2.7.1",
+    "sinon": "^14.0.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.8.4"
+  }
+}
