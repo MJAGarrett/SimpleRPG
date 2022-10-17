@@ -41,7 +41,7 @@ describe("Player Class", () => {
 			const stuff = player.equipment;
 			chai.expect(stuff).to.have.all.keys("headwear", "shirt", "footwear", "pants", "weapon");
 			const equipSlots: EquipSlot[] = Object.keys(stuff) as EquipSlot[];
-			for(const slot of equipSlots) {
+			for (const slot of equipSlots) {
 				expect(stuff[slot]).to.be.null;
 			}
 		});
@@ -72,7 +72,7 @@ describe("Player Class", () => {
 		describe("getInventory", () => {
 			it("It should return an array of all items in the player's inventory", () => {
 				player.inventory = [];
-				for(let i = 0; i < 10; i++) {
+				for (let i = 0; i < 10; i++) {
 					player.addItem(swordBuilder.build());
 				}
 				const inventory = player.getInventory();

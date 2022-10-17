@@ -40,7 +40,7 @@ class WeaponBuilder<T extends Weapon > {
 	 * @returns The instance of WeaponBuilder to allow for chaining methods.
 	 */
 	setQuality(quality: "low" | "fine" | "standard"): WeaponBuilder<T> {
-		switch(quality) {
+		switch (quality) {
 		case "fine": 
 			this.quality = Qualities[quality];
 			break;

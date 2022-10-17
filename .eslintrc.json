@@ -18,6 +18,23 @@
 		"quotes": ["error", "double"],
 		"semi": ["error", "always"],
 		"semi-spacing": "error",
-		"comma-dangle": ["error", "always-multiline"]
+		"comma-dangle": ["error", "always-multiline"],
+		"space-infix-ops": "error",
+		"brace-style": ["error", "stroustrup"],
+		"space-before-blocks": "error",
+		"arrow-spacing": "error",
+		"keyword-spacing": "error",
+		"space-before-function-paren": ["error", {
+			"anonymous": "always",
+			"named": "never",
+			"asyncArrow": "never"
+		}],
+		"newline-per-chained-call": ["error", {
+			"ignoreChainWithDepth": 3
+		}],
+		"no-multiple-empty-lines": ["error", {
+			"max": 1,
+			"maxEOF": 1
+		}]
 	}
 }

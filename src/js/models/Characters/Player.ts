@@ -23,7 +23,7 @@ class Player extends Character {
 	}
 
 	equipItem(item: Equipable): void {
-		if(!this.checkIfEquipSlotEmpty(item.equipSlot))
+		if (!this.checkIfEquipSlotEmpty(item.equipSlot))
 			this.inventory.push(this.equipment[item.equipSlot] as InventoryItem);
 		this.equipment[item.equipSlot] = item;
 	}

@@ -19,5 +19,4 @@ interface InventoryItem {
 	quality: ItemQuality
 }
 
-
 export { Equipable, ArmorSlot, EquipSlot, WeaponSlot, InventoryItem, ItemQuality };

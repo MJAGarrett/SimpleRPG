@@ -14,6 +14,13 @@ abstract class Armor implements Equipable {
 	}
 }
 
+/**
+ * ************************
+ * End of code not specific
+ * to a piece of armor
+ * ************************
+ */
+
 class Helmet extends Armor {
 	equipSlot: ArmorSlot;
 	type: string;
