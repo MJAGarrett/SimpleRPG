@@ -4,7 +4,8 @@
   "description": "A very simple rpg",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "tsc": "tsc --project tsconfig.build.json"
   },
   "type": "module",
   "author": "Michael Garrett",
