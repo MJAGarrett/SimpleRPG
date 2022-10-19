@@ -47,14 +47,19 @@ class Zone {
 	}
 
 	moveCharacter(char: Character, coords: ZoneCoordinate): void {
-		const charInTargetTile = this.getTile(coords).character;
-		if (charInTargetTile) {
-			this.attack(char, charInTargetTile);
-		}
-		else {
-			this.getTile(char.zoneCoords as ZoneCoordinate).removeCharacter();
-			this.getTile(coords).addCharacter(char);
-			char.updateCoordinates(coords);
+		try {
+			const tile = this.getTile(coords);
+			if (tile.checkForCharacter()) {
+				this.attack(char, tile.getCharacterRef());
+			}
+			else {
+				this.getTile(char.zoneCoords as ZoneCoordinate).removeCharacter();
+				tile.addCharacter(char);
+				char.updateCoordinates(coords);
+			}
+		} 
+		catch (err) {
+			console.error(err);
 		}
 	}
 
