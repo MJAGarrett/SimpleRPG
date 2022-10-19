@@ -15,7 +15,7 @@ class Game {
 	 * A Testing method used to initialize the game area.
 	 */
 	initialize(): void {
-		this.currentZone.area[0][0].addCharacter(this.player);
+		this.currentZone.placeCharacter(this.player, {row: 0, column: 0});
 
 	}
 	registerController(control: GameController): void {
