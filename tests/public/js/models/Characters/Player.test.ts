@@ -47,12 +47,6 @@ describe("Player Class", () => {
 				expect(stuff[slot]).to.be.null;
 			}
 		});
-
-		it("it should initialize player's zoneCoords to {row: 0, column: 0}", () => {
-			const { row, column } = player.zoneCoords;
-			expect(row).to.equal(0);
-			expect(column).to.equal(0);
-		});
 	});
 	
 	describe("Player methods", () => {
@@ -159,6 +153,9 @@ describe("Player Class", () => {
 			it("it should call zone.moveCharacter() with appropriate coordinates based on the input", () => {
 				const spiedFunc = Sinon.spy(zone, "moveCharacter");
 				player.move({ horizontal: "right", vertical: "up"});
+
+				// Redefining coords here to avoid TypeScript thinking they could be undefined.
+				player.zoneCoords = { row: 1, column: 1 };
 
 				const expectedCoords: ZoneCoordinate = { 
 					row: player.zoneCoords.row + 1, 

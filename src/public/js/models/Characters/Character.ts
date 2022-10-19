@@ -26,7 +26,7 @@ abstract class Character {
 	inventory: InventoryItem[];
 	level: number;
 	equipment: CharacterEquipment;
-	zoneCoords: ZoneCoordinate;
+	zoneCoords?: ZoneCoordinate;
 	// TODO: rework
 	zone?: Zone;
 	constructor(health?: number, inventory?: InventoryItem[], level?: number) {
@@ -34,7 +34,7 @@ abstract class Character {
 		this.inventory = inventory || [];
 		this.level = level || 1;
 		this.equipment = initializeEquipment();
-		this.zoneCoords = {row: 0, column: 0};
+		this.zoneCoords = undefined;
 		this.zone = undefined;
 	}
 	
@@ -43,6 +43,11 @@ abstract class Character {
 	}
 
 	updateCoordinates(coords: ZoneCoordinate): void {
+		this.zoneCoords = coords;
+	}
+
+	updateZoneInfo(zone: Zone, coords: ZoneCoordinate): void {
+		this.zone = zone;
 		this.zoneCoords = coords;
 	}
 }

@@ -41,6 +41,7 @@ class Player extends Character {
 	}
 
 	move(input: MovementCommand): void {
+		if (!this.zoneCoords || !this.zone) throw new Error("Character not placed in a zone");
 		let { row, column }: ZoneCoordinate = this.zoneCoords;
 		if (input.horizontal) {
 			if (input.horizontal === "left") {
@@ -58,10 +59,7 @@ class Player extends Character {
 				row += 1;
 			}
 		}
-		if (this.zone) {
-			this.zone.moveCharacter(this, {row, column});
-		}
-		else throw new Error("Zone not setup");
+		this.zone.moveCharacter(this, {row, column});
 	}
 }
 

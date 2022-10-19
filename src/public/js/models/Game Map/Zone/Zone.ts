@@ -52,7 +52,7 @@ class Zone {
 			this.attack(char, charInTargetTile);
 		}
 		else {
-			this.getTile(char.zoneCoords).removeCharacter();
+			this.getTile(char.zoneCoords as ZoneCoordinate).removeCharacter();
 			this.getTile(coords).addCharacter(char);
 			char.updateCoordinates(coords);
 		}
@@ -63,6 +63,16 @@ class Zone {
 			`The attacker is ${attackingChar.name}\nThe defender is ${defendingChar.name}`,
 		);
 		
+	}
+
+	placeCharacter(char: Character, coords: ZoneCoordinate): void {
+		this.getTile(coords).addCharacter(char);
+		char.updateZoneInfo(this, coords);
+	}
+
+	removeCharacter(char: Character): void {
+		const tile = this.getTile(char.zoneCoords as ZoneCoordinate);
+		tile.removeCharacter();
 	}
 }
 

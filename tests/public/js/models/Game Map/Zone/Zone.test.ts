@@ -135,5 +135,47 @@ describe("Zone", () => {
 				expect(spied.calledOnce).to.be.true;
 			});
 		});
+
+		describe("placeCharacter()", () => {
+			let player: Player;
+			let coords: ZoneCoordinate;
+
+			beforeEach(() => {
+				player = new Player();
+				coords = {
+					row: 0,
+					column: 0,
+				};
+				zone = new Zone();
+			});
+
+			it("it should call the appropriate tile's addCharacter method with the Character reference it was passed", () => {
+				const spiedTile = Sinon.spy(zone.area[coords.row][coords.column], "addCharacter");
+
+				zone.placeCharacter(player, coords);
+
+				expect(spiedTile.calledOnceWith(player)).to.be.true;
+			});
+
+			it("it should call updateZoneInfo on the character it has placed", () => {
+				const spy = Sinon.spy(player, "updateZoneInfo");
+				zone.placeCharacter(player, coords);
+				expect(spy.calledOnceWith(zone, coords)).to.be.true;
+			});
+		});
+
+		describe("removeCharacter()", () => {
+			let player: Player;
+			beforeEach(() => {
+				player = new Player();
+				zone.placeCharacter(player, {row: 0, column: 0});
+			});
+
+			it("it should remove a character reference from its area", () => {
+				zone.removeCharacter(player);
+
+				expect(zone.area[0][0].character).to.be.null;
+			});
+		});
 	});
 });
