@@ -33,8 +33,8 @@ class Zone {
 		const { row, column } = coords;
 		const errors: string[] = [];
 
-		if (row > 7 || row < 0) errors.push("Row out of bounds.");
-		if (column > 7 || column < 0) errors.push("Column out of bounds");
+		if (row > 9 || row < 0) errors.push("Row out of bounds.");
+		if (column > 9 || column < 0) errors.push("Column out of bounds");
 
 		if (errors.length > 0) {
 			const message = errors.reduce((message, curr) => {

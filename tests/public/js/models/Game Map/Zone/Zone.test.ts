@@ -32,7 +32,7 @@ describe("Zone", () => {
 
 			it("it should throw an error if the row or column coords are out of bounds", () => {
 				expect(() => zone.getTile({row: -1, column: 4})).to.throw();
-				expect(() => zone.getTile({row: 2, column: 8})).to.throw();
+				expect(() => zone.getTile({row: 2, column: 12})).to.throw();
 				expect(() => zone.getTile({row: 10, column: -21})).to.throw();
 			});
 		});
