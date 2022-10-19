@@ -1,16 +1,16 @@
 import Game from "../models/Game.js";
 import Tile from "../models/Game Map/Tile/Tile.js";
 import Zone from "../models/Game Map/Zone/Zone.js";
+import { MovementCommand } from "../models/Characters/Player.js";
 
 class GameController {
-	gameModel?: typeof Game;
+	gameModel: typeof Game;
 	gameArea: HTMLElement | null;
-	constructor(game?: typeof Game) {
-		if (game) {
-			this.gameModel = game;
-			game.registerController(this);
-		}
+	constructor(game: typeof Game) {
+		this.gameModel = game;
+		game.registerController(this);
 		this.gameArea = document.querySelector(".game-area");
+		this.initializeEventHandlers();
 	}
 	notify(): void {
 		if (!this.gameModel) throw new Error("No game registered with this controller");
@@ -49,6 +49,58 @@ class GameController {
 		return tileDiv;
 	}
 
+	private initializeEventHandlers() {
+		this.setUpPlayerMovementHandler();
+	}
+
+	private setUpPlayerMovementHandler() {
+		window.addEventListener("keydown", (e) => {
+			const movement: MovementCommand = {};
+			const code = e.code;
+			switch (true) {
+			case code === "KeyA" || code === "Numpad4":
+				e.preventDefault();
+				movement.horizontal = "left";
+				break;
+			case code === "KeyD" || code === "Numpad6":
+				e.preventDefault();
+				movement.horizontal = "right";
+				break;
+			case code === "KeyW" || code === "Numpad8":
+				e.preventDefault();
+				movement.vertical = "up";
+				break;
+			case code === "KeyS" || code === "Numpad2":
+				e.preventDefault();
+				movement.vertical = "down";
+				break;
+			case code === "Numpad9":
+				e.preventDefault();
+				movement.vertical = "up";
+				movement.horizontal = "right";
+				break;
+			case code === "Numpad7":
+				e.preventDefault();
+				movement.vertical = "up";
+				movement.horizontal = "left";
+				break;
+			case code === "Numpad3":
+				e.preventDefault();
+				movement.vertical = "down";
+				movement.horizontal = "right";
+				break;
+			case code === "Numpad1":
+				e.preventDefault();
+				movement.vertical = "down";
+				movement.horizontal = "left";
+				break;
+			}
+			if (Object.keys(movement).length > 0) {
+				this.gameModel.player.move(movement);
+				this.renderZone(this.gameModel.currentZone);
+			}
+		});
+	}
 }
 
 export default GameController;
