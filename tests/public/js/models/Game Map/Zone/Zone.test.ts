@@ -1,6 +1,8 @@
 import {expect} from "chai";
-import Tile from "../../../../../../src/js/models/Game Map/Tile/Tile.js";
-import Zone from "../../../../../../src/js/models/Game Map/Zone/Zone.js";
+import Sinon from "sinon";
+import Player from "../../../../../../src/public/js/models/Characters/Player.js";
+import Tile from "../../../../../../src/public/js/models/Game Map/Tile/Tile.js";
+import Zone, { ZoneCoordinate } from "../../../../../../src/public/js/models/Game Map/Zone/Zone.js";
 
 describe("Zone", () => {
 	let zone: Zone;
@@ -32,6 +34,105 @@ describe("Zone", () => {
 				expect(() => zone.getTile({row: -1, column: 4})).to.throw();
 				expect(() => zone.getTile({row: 2, column: 8})).to.throw();
 				expect(() => zone.getTile({row: 10, column: -21})).to.throw();
+			});
+		});
+
+		describe("moveCharacter()", () => {
+			let player: Player;
+
+			beforeEach(() => {
+				zone = new Zone();
+				player = new Player();
+			});
+
+			it("it should call attack() with the appropriate characters if there is already a character in the square", () => {
+				const attackingChar = new Player();
+				const defendingChar = new Player();
+				zone.area[0][1].character = attackingChar;
+				zone.area[0][0].character = defendingChar;
+
+				const attackSpy = Sinon.spy(zone, "attack");
+
+				zone.moveCharacter(attackingChar, {
+					row: 0,
+					column: 0,
+				});
+
+				expect(attackSpy.calledWithExactly(attackingChar, defendingChar)).to.be.true;
+			});
+
+			it("it should not call removeCharacter() or addCharacter() on tiles if there is a character already in a square", () => {
+				const attackingChar = new Player();
+				const defendingChar = new Player();
+				zone.area[0][1].character = attackingChar;
+				zone.area[0][0].character = defendingChar;
+
+				const attackTileSpy = Sinon.spy(zone.area[0][1], "removeCharacter");
+				const defendTileSpy = Sinon.spy(zone.area[0][0], "addCharacter");
+
+				zone.moveCharacter(attackingChar, {
+					row: 0,
+					column: 0,
+				});
+
+				expect(attackTileSpy.notCalled).to.be.true;
+				expect(defendTileSpy.notCalled).to.be.true;
+			});
+
+			it("it should call the tile's addCharacter() method", () => {
+				const newCoords: ZoneCoordinate = {
+					row: 0,
+					column: 0,
+				};
+				const spiedFunc = Sinon.spy(zone.area[0][0], "addCharacter");
+
+				zone.area[1][1].character = player;
+				player.zoneCoords = { row: 1, column: 1};
+
+				zone.moveCharacter(player, newCoords);
+
+				expect(spiedFunc.calledOnce).to.be.true;
+			});
+
+			it("it should take a character and an adjacent coordinate and attempt to move the character to it", () => {			
+				const newCoords: ZoneCoordinate = {
+					row: 0,
+					column: 0,
+				};
+
+				zone.area[1][1].character = player;
+				player.zoneCoords = { row: 1, column: 1};
+				zone.moveCharacter(player, newCoords);
+		
+				expect(zone.area[0][0].character).to.equal(player);
+			});
+
+			it("it should call the removeCharacter() method on the character's original tile", () => {
+				const newCoords: ZoneCoordinate = {
+					row: 0,
+					column: 0,
+				};
+
+				zone.area[1][1].character = player;
+				player.updateCoordinates({row: 1, column: 1});
+				const spiedFunc = Sinon.spy(zone.area[1][1], "removeCharacter");
+
+				zone.moveCharacter(player, newCoords);
+
+				expect(spiedFunc.calledOnce).to.be.true;
+			});
+
+			it("it should call the character's updateCoordinates() method", () => {
+				const newCoordinates: ZoneCoordinate = {
+					row: 1,
+					column: 1,
+				};
+				player.zoneCoords = {row: 0, column: 0};
+				zone.area[0][0].character = player;
+				const spied = Sinon.spy(player, "updateCoordinates");
+
+				zone.moveCharacter(player, newCoordinates);
+				expect(spied.calledOnce).to.be.true;
 			});
 		});
 	});

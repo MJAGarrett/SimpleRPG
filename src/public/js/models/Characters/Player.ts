@@ -1,13 +1,21 @@
+import { ZoneCoordinate } from "../Game Map/Zone/Zone.js";
 import { Equipable, InventoryItem } from "../Items/Interfaces.js";
 import Character, {CharacterEquipment} from "./Character.js";
 
 type EquipSlot = keyof CharacterEquipment;
 
+interface MovementCommand {
+	vertical?: "up" | "down",
+	horizontal?: "left" | "right",
+}
+
 class Player extends Character {
+	name: string;
 	experience: number;
 	constructor() {
 		super();
 		this.experience = 0;
+		this.name = "Player";
 	}
 
 	/**
@@ -32,6 +40,29 @@ class Player extends Character {
 		return this.equipment[slot] === null;
 	}
 
+	move(input: MovementCommand): void {
+		let { row, column }: ZoneCoordinate = this.zoneCoords;
+		if (input.horizontal) {
+			if (input.horizontal === "left") {
+				column -= 1;
+			} 
+			else {
+				column += 1;
+			}
+		}
+		if (input.vertical) {
+			if (input.vertical === "up") {
+				row -= 1;
+			} 
+			else {
+				row += 1;
+			}
+		}
+		if (this.zone) {
+			this.zone.moveCharacter(this, {row, column});
+		}
+		else throw new Error("Zone not setup");
+	}
 }
 
 export default Player;

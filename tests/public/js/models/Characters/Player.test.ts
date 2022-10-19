@@ -1,10 +1,12 @@
 import { expect } from "chai";
 
-import Player from "../../../../../src/js/models/Characters/Player.js";
-import Sword from "../../../../../src/js/models/Items/Weapons/Sword.js";
-import WeaponBuilder from "../../../../../src/js/models/Items/Weapons/WeaponBuilder.js";
-import {Helmet} from "../../../../../src/js/models/Items/Armor and Clothing/Armor.js";
-import {EquipSlot} from "../../../../../src/js/models/Items/Interfaces";
+import Player from "../../../../../src/public/js/models/Characters/Player.js";
+import Sword from "../../../../../src/public/js/models/Items/Weapons/Sword.js";
+import WeaponBuilder from "../../../../../src/public/js/models/Items/Weapons/WeaponBuilder.js";
+import {Helmet} from "../../../../../src/public/js/models/Items/Armor and Clothing/Armor.js";
+import {EquipSlot} from "../../../../../src/public/js/models/Items/Interfaces";
+import Zone, { ZoneCoordinate } from "../../../../../src/public/js/models/Game Map/Zone/Zone.js";
+import Sinon from "sinon";
 
 // const should = chai.should();
 describe("Player Class", () => {
@@ -45,12 +47,19 @@ describe("Player Class", () => {
 				expect(stuff[slot]).to.be.null;
 			}
 		});
+
+		it("it should initialize player's zoneCoords to {row: 0, column: 0}", () => {
+			const { row, column } = player.zoneCoords;
+			expect(row).to.equal(0);
+			expect(column).to.equal(0);
+		});
 	});
 	
 	describe("Player methods", () => {
 	
 		let player: Player;
 		let swordBuilder: WeaponBuilder<Sword>;
+		let zone: Zone;
 	
 		before(() => {
 			player = new Player();
@@ -83,16 +92,6 @@ describe("Player Class", () => {
 					expect(item instanceof Sword).to.be.true;
 				});
 				
-			});
-		});
-	
-		describe("reduceHealth()", () => {
-			it("should reduce the player's health by an input", () => {
-				const previousHealth = player.health;
-	
-				player.reduceHealth(20);
-	
-				expect(player.health).to.equal(previousHealth - 20);
 			});
 		});
 
@@ -146,6 +145,28 @@ describe("Player Class", () => {
 				expect(player.inventory).to.include(oldSword);
 			});
 
+		});
+
+		describe("move()", () => {
+			const player = new Player();
+			beforeEach(() => {
+				zone = new Zone();
+				zone.area[1][1].character = player;
+				player.zoneCoords = { row: 1, column: 1 };
+				player.zone = zone;
+			});
+
+			it("it should call zone.moveCharacter() with appropriate coordinates based on the input", () => {
+				const spiedFunc = Sinon.spy(zone, "moveCharacter");
+				player.move({ horizontal: "right", vertical: "up"});
+
+				const expectedCoords: ZoneCoordinate = { 
+					row: player.zoneCoords.row + 1, 
+					column: player.zoneCoords.column + 1,
+				};
+
+				expect(spiedFunc.calledOnceWithExactly(player, expectedCoords));
+			});
 		});
 	});
 

@@ -1,8 +1,8 @@
 import {expect} from "chai";
-import Player from "../../../../../../src/js/models/Characters/Player.js";
-import Tile from "../../../../../../src/js/models/Game Map/Tile/Tile.js";
-import { Breastplate, Helmet } from "../../../../../../src/js/models/Items/Armor and Clothing/Armor.js";
-import Sword from "../../../../../../src/js/models/Items/Weapons/Sword.js";
+import Player from "../../../../../../src/public/js/models/Characters/Player.js";
+import Tile from "../../../../../../src/public/js/models/Game Map/Tile/Tile.js";
+import { Breastplate, Helmet } from "../../../../../../src/public/js/models/Items/Armor and Clothing/Armor.js";
+import Sword from "../../../../../../src/public/js/models/Items/Weapons/Sword.js";
 
 describe("Tile", () => {
 	let tile: Tile;
