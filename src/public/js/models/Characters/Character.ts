@@ -1,8 +1,10 @@
 import { Equipable, InventoryItem} from "../Items/Interfaces.js";
 import Zone, { ZoneCoordinate } from "../Game Map/Zone/Zone.js";
+import { Weapon } from "../Items/Weapons/Weapons.js";
+import { Armor } from "../Items/Armor and Clothing/Armor.js";
 
 interface CharacterEquipment {
-	weapon: Equipable | null
+	weapon: Equipable | null,
 	headwear: Equipable | null,
 	shirt: Equipable | null,
 	pants: Equipable | null,
@@ -40,6 +42,7 @@ abstract class Character {
 	
 	reduceHealth(damage: number): void {
 		this.health -= damage;
+		if (this.health <= 0 && this.zone) this.zone.removeCharacter(this); 
 	}
 
 	updateCoordinates(coords: ZoneCoordinate): void {
@@ -49,6 +52,26 @@ abstract class Character {
 	updateZoneInfo(zone: Zone, coords: ZoneCoordinate): void {
 		this.zone = zone;
 		this.zoneCoords = coords;
+	}
+
+	calcDamage(): number {
+		if (this.equipment.weapon === null) return 20;
+		const weapon: Weapon = this.equipment.weapon as Weapon;
+
+		// TODO: Implement character strength calculations when attributes are added.
+		const baseDamage = weapon.getDamage();
+		return baseDamage;
+	}
+
+	calcDefense(): number {
+		let armorPower = 0;
+		const equipment = Object.values(this.equipment);
+		for (const item of equipment) {		
+			if (item instanceof Armor) {
+				armorPower += item.armorValue;
+			}
+		}
+		return armorPower;
 	}
 }
 

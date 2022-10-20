@@ -64,10 +64,19 @@ class Zone {
 	}
 
 	attack(attackingChar: Character, defendingChar: Character): void {
-		console.log(
-			`The attacker is ${attackingChar.name}\nThe defender is ${defendingChar.name}`,
-		);
-		
+		const attackPower = attackingChar.calcDamage();
+		const defensePower = defendingChar.calcDefense();
+		const defRatio: number = defensePower / (attackPower * 2);
+
+		let finalAttackPower: number;
+
+		if (defRatio >= .80) {
+			finalAttackPower = attackPower * .2;
+		} 
+		else {
+			finalAttackPower = attackPower * (1 - defRatio);
+		} 
+		defendingChar.reduceHealth(finalAttackPower);
 	}
 
 	placeCharacter(char: Character, coords: ZoneCoordinate): void {

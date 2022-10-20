@@ -1,8 +1,11 @@
 import {expect} from "chai";
 import Sinon from "sinon";
+import Swordsman from "../../../../../../src/public/js/models/Characters/NPCs/Swordsman.js";
 import Player from "../../../../../../src/public/js/models/Characters/Player.js";
 import Tile from "../../../../../../src/public/js/models/Game Map/Tile/Tile.js";
 import Zone, { ZoneCoordinate } from "../../../../../../src/public/js/models/Game Map/Zone/Zone.js";
+import { Breastplate } from "../../../../../../src/public/js/models/Items/Armor and Clothing/Armor.js";
+import Sword from "../../../../../../src/public/js/models/Items/Weapons/Sword.js";
 
 describe("Zone", () => {
 	let zone: Zone;
@@ -175,6 +178,70 @@ describe("Zone", () => {
 				zone.removeCharacter(player);
 
 				expect(zone.area[0][0].character).to.be.null;
+			});
+
+			/**
+			 * This does not remove references from the Character being removed to the zone itself.
+			 * This is because the Character reference will be unreachable from the root, and thus
+			 * able to be garbage collected.
+			 */
+		});
+
+		describe("attack()", () => {
+			let player: Player;
+			let enemy: Swordsman;
+			beforeEach(() => {
+				player = new Player();
+				player.equipItem(new Sword());
+				enemy = new Swordsman();
+				zone.placeCharacter(player, {row: 2, column: 2});
+				zone.placeCharacter(enemy, {row: 2, column: 3});
+			});
+
+			it("it should call the attacking character's calcDamage() method and save the result", () => {
+				const spiedAttacker = Sinon.spy(player, "calcDamage");
+
+				zone.attack(player, enemy);
+
+				expect(spiedAttacker.calledOnce).to.be.true;
+				expect(spiedAttacker.returnValues[0]).to.be.a("number");
+			});
+
+			it("it should call the defending character's calcDefense() method and save the result", () => {
+				const spiedDefender = Sinon.spy(enemy, "calcDefense");
+
+				zone.attack(player, enemy);
+
+				expect(spiedDefender.calledOnce).to.be.true;
+				expect(spiedDefender.returnValues[0]).to.be.a("number");
+			});
+
+			it("it should calculate an attack value and subtract it from the defending character's health", () => {
+
+				/**
+				 * The current formula for calculating damage negation:
+				 * defense / (attack * 2) = reduction %
+				 * cap reduction at 80%.
+				 */
+
+				enemy.equipment.shirt = new Breastplate();
+				const attackPower = player.calcDamage();
+				const defensePower = enemy.calcDefense();
+				const ratio = defensePower / (attackPower * 2);
+				const healthBefore = enemy.health;
+				let expectedDamage: number;
+
+				if (ratio >= .8) {
+					expectedDamage = attackPower * .2;
+				}
+				else {
+					expectedDamage = attackPower * (1 - ratio);
+				}
+				
+				zone.attack(player, enemy);
+				
+				const healthAfter = enemy.health;
+				expect(healthBefore - healthAfter).to.equal(expectedDamage);
 			});
 		});
 	});
