@@ -1,4 +1,5 @@
 import GameController from "../controllers/GameController.js";
+import NPCGenerator from "./Characters/NPCs/NPCGenerator.js";
 import Player from "./Characters/Player.js";
 import Zone from "./Game Map/Zone/Zone.js";
 
@@ -16,7 +17,7 @@ class Game {
 	 */
 	initialize(): void {
 		this.currentZone.placeCharacter(this.player, {row: 0, column: 0});
-
+		this.currentZone.placeCharacter(NPCGenerator.swordsman(), {row: 4, column: 2});
 	}
 	registerController(control: GameController): void {
 		this.controller = control;
