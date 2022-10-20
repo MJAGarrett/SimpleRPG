@@ -7,7 +7,7 @@
 :root {
   --game-width: calc(min(100vh, 100vw));
   --game-height: calc(var(--game-width) * 1.2);
-  --game-sprite-size: calc(min(var(--game-height), var(--game-width)) * 0.1);
+  --game-sprite-size: calc(min(var(--game-height), var(--game-width)) * 0.08);
 }
 
 .game-area {
