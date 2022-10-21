@@ -10,6 +10,10 @@
   --game-sprite-size: calc(min(var(--game-height), var(--game-width)) * 0.08);
 }
 
+body {
+  background-color: #242424;
+}
+
 .UI-area {
   display: flex;
   flex-direction: column;
@@ -42,16 +46,17 @@
 
 .event-log {
   color: #eee;
-  padding: 1rem;
+  padding: .5rem;
 }
 .event-log h3 {
   text-align: center;
-  margin-bottom: 1em;
+  margin-bottom: .5em;
 }
 .message-container {
   display: flex;
   flex-direction: column;
   border: 2px solid black;
+  min-height: clamp(100px, 100px + 2vh, 300px);
 }
 .message-container > p {
   padding: .5em .5em;
@@ -66,5 +71,8 @@
   }
   .UI-area {
     flex-direction: row;
+  }
+  .info-panel {
+    min-width: 250px;
   }
 }

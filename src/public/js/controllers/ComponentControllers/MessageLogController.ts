@@ -17,6 +17,9 @@ class MessageLogController implements ComponentController {
 		const message = document.createElement("p");
 		message.textContent = event.details.message;
 		message.style.color = event.details.color;
+		message.addEventListener("click", () => {
+			this.componentToUpdate.removeChild(message);
+		});
 		this.componentToUpdate.appendChild(message);
 	}
 }
