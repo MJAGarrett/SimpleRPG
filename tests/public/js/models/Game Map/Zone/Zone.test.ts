@@ -2,10 +2,12 @@ import {expect} from "chai";
 import Sinon from "sinon";
 import Swordsman from "../../../../../../src/public/js/models/Characters/NPCs/Swordsman.js";
 import Player from "../../../../../../src/public/js/models/Characters/Player.js";
+import { GameEvent } from "../../../../../../src/public/js/models/Events/GameEvent.js";
 import Tile from "../../../../../../src/public/js/models/Game Map/Tile/Tile.js";
 import Zone, { ZoneCoordinate } from "../../../../../../src/public/js/models/Game Map/Zone/Zone.js";
 import { Breastplate } from "../../../../../../src/public/js/models/Items/Armor and Clothing/Armor.js";
 import Sword from "../../../../../../src/public/js/models/Items/Weapons/Sword.js";
+import game from "../../../../../../src/public/js/models/Game.js";
 
 describe("Zone", () => {
 	let zone: Zone;
@@ -196,6 +198,8 @@ describe("Zone", () => {
 				enemy = new Swordsman();
 				zone.placeCharacter(player, {row: 2, column: 2});
 				zone.placeCharacter(enemy, {row: 2, column: 3});
+				game.currentZone = zone;
+				game.player = player;
 			});
 
 			it("it should call the attacking character's calcDamage() method and save the result", () => {
@@ -242,6 +246,43 @@ describe("Zone", () => {
 				
 				const healthAfter = enemy.health;
 				expect(healthBefore - healthAfter).to.equal(expectedDamage);
+			});
+
+			it("it should call the instance's emitEvent() method with a message detailing the attack", () => {
+				
+				const spiedFunc = Sinon.spy(zone, "emitEvent");
+				const expectedMessage = JSON.stringify(GameEvent.messageEvent({
+					color: "white",
+					message: `You deal 35 damage to ${enemy.name}.`,
+				}));
+
+				zone.attack(player, enemy);
+
+				expect(spiedFunc.calledOnce);
+				const [message] = spiedFunc.args[0];
+				const comparableMessage = JSON.stringify(message);
+				
+				expect(comparableMessage).to.equal(expectedMessage);
+			});
+		});
+
+		describe("emitEvent()", () => {
+
+			afterEach(() => {
+				game.currentZone = undefined;
+			});
+
+			it("it should pass an event onto the game's handleEvent() method", () => {
+				const message = GameEvent.messageEvent({
+					color: "white",
+					message: "test",
+				});
+				game.currentZone = zone;
+				const spy = Sinon.spy(game, "handleEvent");
+
+				zone.emitEvent(message);
+				expect(spy.calledOnceWith(message)).to.be.true;
+
 			});
 		});
 	});

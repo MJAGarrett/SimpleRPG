@@ -2,6 +2,7 @@ import { Equipable, InventoryItem} from "../Items/Interfaces.js";
 import Zone, { ZoneCoordinate } from "../Game Map/Zone/Zone.js";
 import { Weapon } from "../Items/Weapons/Weapons.js";
 import { Armor } from "../Items/Armor and Clothing/Armor.js";
+import { GameEvent } from "../Events/GameEvent.js";
 
 interface CharacterEquipment {
 	weapon: Equipable | null,
@@ -42,7 +43,15 @@ abstract class Character {
 	
 	reduceHealth(damage: number): void {
 		this.health -= damage;
-		if (this.health <= 0 && this.zone) this.zone.removeCharacter(this); 
+
+		if (this.health <= 0 && this.zone) {
+			this.zone.removeCharacter(this);
+			const deathEvent = GameEvent.messageEvent({
+				color: "red",
+				message: this.generateDeathMessage(),
+			});
+			this.emitEvent(deathEvent);
+		} 
 	}
 
 	updateCoordinates(coords: ZoneCoordinate): void {
@@ -72,6 +81,12 @@ abstract class Character {
 			}
 		}
 		return armorPower;
+	}
+
+	abstract generateDeathMessage(): string 
+
+	emitEvent(evt: GameEvent): void {
+		this.zone?.emitEvent(evt);
 	}
 }
 

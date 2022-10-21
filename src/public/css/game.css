@@ -10,6 +10,11 @@
   --game-sprite-size: calc(min(var(--game-height), var(--game-width)) * 0.08);
 }
 
+.UI-area {
+  display: flex;
+  flex-direction: column;
+}
+
 .game-area {
   width: var(--game-width);
   display: grid;
@@ -30,8 +35,36 @@
   font-size: var(--game-sprite-size);
 }
 
+.info-panel {
+  flex: 1;
+  background-color: #242424;
+}
+
+.event-log {
+  color: #eee;
+  padding: 1rem;
+}
+.event-log h3 {
+  text-align: center;
+  margin-bottom: 1em;
+}
+.message-container {
+  display: flex;
+  flex-direction: column;
+  border: 2px solid black;
+}
+.message-container > p {
+  padding: .5em .5em;
+}
+.message-container > p:not(:last-of-type) {
+  border-bottom: 1px solid black;
+}
+
 @media screen and (min-width: 750px) {
   :root {
     --game-height: var(--game-width);
+  }
+  .UI-area {
+    flex-direction: row;
   }
 }

@@ -61,6 +61,10 @@ class Player extends Character {
 		}
 		this.zone.moveCharacter(this, {row, column});
 	}
+
+	generateDeathMessage(): string {
+		return "You have died.";
+	}
 }
 
 export default Player;

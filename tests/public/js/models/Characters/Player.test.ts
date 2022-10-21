@@ -165,6 +165,14 @@ describe("Player Class", () => {
 				expect(spiedFunc.calledOnceWithExactly(player, expectedCoords));
 			});
 		});
+
+		describe("generateDeathMessage()", () => {
+
+			it("it should return \"You have died.\"", () => {
+				const actual = player.generateDeathMessage();
+				expect(actual).to.equal("You have died.");
+			});
+		});
 	});
 
 });

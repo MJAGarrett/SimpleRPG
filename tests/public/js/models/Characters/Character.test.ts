@@ -2,6 +2,7 @@ import { expect } from "chai";
 import Sinon from "sinon";
 import Character from "../../../../../src/public/js/models/Characters/Character.js";
 import Player from "../../../../../src/public/js/models/Characters/Player.js";
+import { GameEvent } from "../../../../../src/public/js/models/Events/GameEvent.js";
 import Zone, { ZoneCoordinate } from "../../../../../src/public/js/models/Game Map/Zone/Zone.js";
 import { Breastplate, Helmet } from "../../../../../src/public/js/models/Items/Armor and Clothing/Armor.js";
 import Sword from "../../../../../src/public/js/models/Items/Weapons/Sword.js";
@@ -40,6 +41,28 @@ describe("Character Abstract Class", () => {
 				player.reduceHealth(player.health + 10);
 
 				expect(spy.calledOnceWithExactly(player)).to.be.true;
+			});
+
+			it("it should call the character's emitEvent() method with a deathMessage when the character's health falls to 0 or below", () => {
+				const tempZone = new Zone();
+				tempZone.placeCharacter(player, {row: 0, column: 0});
+
+				const dmgToKill = player.health * 2;
+				const spy = Sinon.spy(player, "emitEvent");
+				const expectedMessage = JSON.stringify(GameEvent.messageEvent({
+					color: "red",
+					message: player.generateDeathMessage(),
+				}));
+
+				player.reduceHealth(dmgToKill);
+
+				expect(spy.calledOnce).to.be.true;
+				const [recievedMessage] = spy.args[0];
+				const actualMessage = JSON.stringify(recievedMessage);
+				console.log(actualMessage);
+				console.log(expectedMessage);
+				
+				expect(actualMessage === expectedMessage).to.be.true;
 			});
 		});
 
@@ -108,6 +131,26 @@ describe("Character Abstract Class", () => {
 				const actual = player.calcDefense();
 
 				expect(actual).to.equal(expected);
+			});
+		});
+
+		describe("emitEvent()", () => {
+			let tempZone: Zone;
+			
+			beforeEach(() => {
+				tempZone = new Zone();
+				tempZone.placeCharacter(player, {row: 0, column: 0});
+			});
+
+			it("it should call the character's zone's emitEvent() method with an event", () => {
+				const testEvent = GameEvent.messageEvent({
+					color: "blue",
+					message: "test",
+				});
+				const spy = Sinon.spy(tempZone, "emitEvent");
+
+				player.emitEvent(testEvent);
+				expect(spy.calledOnceWith(testEvent)).to.be.true;
 			});
 		});
 	});

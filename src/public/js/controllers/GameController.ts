@@ -2,19 +2,33 @@ import Game from "../models/Game.js";
 import Tile from "../models/Game Map/Tile/Tile.js";
 import Zone from "../models/Game Map/Zone/Zone.js";
 import { MovementCommand } from "../models/Characters/Player.js";
+import { GameEvent } from "../models/Events/GameEvent.js";
+import Controller from "./Controller.js";
+import MessageLogController from "./ComponentControllers/MessageLogController.js";
 
 class GameController {
 	gameModel: typeof Game;
+	components: Controller[];
 	gameArea: HTMLElement | null;
 	constructor(game: typeof Game) {
+		this.components = [];
 		this.gameModel = game;
 		game.registerController(this);
 		this.gameArea = document.querySelector(".game-area");
 		this.initializeEventHandlers();
+		this.initializeComponents();
 	}
 	notify(): void {
 		if (!this.gameModel) throw new Error("No game registered with this controller");
-		this.renderZone(this.gameModel.currentZone);
+		this.renderZone(this.gameModel.currentZone as Zone);
+	}
+
+	handleGameEvents(event: GameEvent): void {
+		for (const component of this.components) {
+			if (component.handleType === event.type) {
+				component.updateComponent(event);
+			}
+		}
 	}
 
 	private renderZone(zone: Zone): void {
@@ -97,9 +111,13 @@ class GameController {
 			}
 			if (Object.keys(movement).length > 0) {
 				this.gameModel.player.move(movement);
-				this.renderZone(this.gameModel.currentZone);
+				this.renderZone(this.gameModel.currentZone as Zone);
 			}
 		});
+	}
+
+	private initializeComponents(): void {
+		this.components.push(new MessageLogController());
 	}
 }
 

@@ -1,5 +1,7 @@
 import Character from "../../Characters/Character.js";
 import Tile from "../Tile/Tile.js";
+import game from "../../Game.js";
+import { GameEvent } from "../../Events/GameEvent.js";
 
 interface ZoneCoordinate {
 	row: number,
@@ -8,6 +10,7 @@ interface ZoneCoordinate {
 
 class Zone {
 	area: Array<Array<Tile>>;
+	game: typeof game;
 	constructor() {
 		const area = new Array(10);
 
@@ -19,7 +22,7 @@ class Zone {
 			}
 		}
 		this.area = area;
-
+		this.game = game;
 	}
 
 	/**
@@ -76,6 +79,13 @@ class Zone {
 		else {
 			finalAttackPower = attackPower * (1 - defRatio);
 		} 
+
+		const attackMessage = GameEvent.messageEvent({
+			color: defendingChar === this.game.player ? "red" : "white",
+			message: `${attackingChar === this.game.player ? "You deal" : attackingChar.name + " deals"} ${finalAttackPower} damage to ${defendingChar === this.game.player ? "you" : defendingChar.name}.`,
+		});
+
+		this.emitEvent(attackMessage);
 		defendingChar.reduceHealth(finalAttackPower);
 	}
 
@@ -87,6 +97,10 @@ class Zone {
 	removeCharacter(char: Character): void {
 		const tile = this.getTile(char.zoneCoords as ZoneCoordinate);
 		tile.removeCharacter();
+	}
+
+	emitEvent(evt: GameEvent): void {
+		this.game.handleEvent(evt);
 	}
 }
 
