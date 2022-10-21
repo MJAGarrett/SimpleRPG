@@ -32,9 +32,9 @@ class Tile {
 		}
 	}
 
-	getCharacterRef(): Character {
+	getCharacterRef(): Character | null {
 		if (!this.checkForCharacter()) {
-			throw new Error("There is no character in this tile");
+			return null;
 		}
 		else {
 			// Type casting as TypeScript doesn't know this.character must be of type Character

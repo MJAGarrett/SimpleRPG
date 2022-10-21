@@ -79,8 +79,8 @@ describe("Tile", () => {
 					tile.character = null;
 				});
 	
-				it("it should throw an error if there is no character in the tile", () => {
-					expect(tile.getCharacterRef).to.throw();
+				it("it should return null if there is no character in the tile", () => {
+					expect(tile.getCharacterRef()).to.be.null;
 				});
 				
 				it("it should return a reference to the character in the tile", () => {
