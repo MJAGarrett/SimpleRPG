@@ -29,7 +29,19 @@ class Game {
 	}
 
 	handleEvent(evt: GameEvent): void {
-		this.controller?.handleGameEvents(evt);
+		if (evt.type === "TURN_OVER") {
+			this.takeTurn();
+		} 
+		else this.controller?.handleGameEvents(evt);
+	}
+
+	takeTurn(): void {
+		// TODO: implement AI turns
+		this.notifyController();
+		if (this.player.getAP() <= 0) {
+			this.player.restoreAP();
+			this.takeTurn();
+		}
 	}
 }
 

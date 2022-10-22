@@ -50,43 +50,13 @@ class Zone {
 	}
 
 	moveCharacter(char: Character, coords: ZoneCoordinate): void {
-		try {
-			const tile = this.getTile(coords);
-			if (tile.checkForCharacter()) {
-				this.attack(char, tile.getCharacterRef());
-			}
-			else {
-				this.getTile(char.zoneCoords as ZoneCoordinate).removeCharacter();
-				tile.addCharacter(char);
-				char.updateCoordinates(coords);
-			}
-		} 
-		catch (err) {
-			console.error(err);
+		const tile = this.getTile(coords);
+		if (!tile.checkForCharacter()) {
+			this.getTile(char.zoneCoords as ZoneCoordinate).removeCharacter();
+			tile.addCharacter(char);
+			char.updateCoordinates(coords);
+			this.emitEvent(GameEvent.moveEvent({}));
 		}
-	}
-
-	attack(attackingChar: Character, defendingChar: Character): void {
-		const attackPower = attackingChar.calcDamage();
-		const defensePower = defendingChar.calcDefense();
-		const defRatio: number = defensePower / (attackPower * 2);
-
-		let finalAttackPower: number;
-
-		if (defRatio >= .80) {
-			finalAttackPower = attackPower * .2;
-		} 
-		else {
-			finalAttackPower = attackPower * (1 - defRatio);
-		} 
-
-		const attackMessage = GameEvent.messageEvent({
-			color: defendingChar === this.game.player ? "red" : "white",
-			message: `${attackingChar === this.game.player ? "You deal" : attackingChar.name + " deals"} ${finalAttackPower} damage to ${defendingChar === this.game.player ? "you" : defendingChar.name}.`,
-		});
-
-		this.emitEvent(attackMessage);
-		defendingChar.reduceHealth(finalAttackPower);
 	}
 
 	placeCharacter(char: Character, coords: ZoneCoordinate): void {

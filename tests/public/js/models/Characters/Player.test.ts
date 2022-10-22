@@ -7,6 +7,8 @@ import {Helmet} from "../../../../../src/public/js/models/Items/Armor and Clothi
 import {EquipSlot} from "../../../../../src/public/js/models/Items/Interfaces";
 import Zone, { ZoneCoordinate } from "../../../../../src/public/js/models/Game Map/Zone/Zone.js";
 import Sinon from "sinon";
+import Swordsman from "../../../../../src/public/js/models/Characters/NPCs/Swordsman.js";
+import { GameEvent } from "../../../../../src/public/js/models/Events/GameEvent.js";
 
 // const should = chai.should();
 describe("Player Class", () => {
@@ -55,7 +57,7 @@ describe("Player Class", () => {
 		let swordBuilder: WeaponBuilder<Sword>;
 		let zone: Zone;
 	
-		before(() => {
+		beforeEach(() => {
 			player = new Player();
 			swordBuilder = new WeaponBuilder(Sword);
 		});
@@ -141,28 +143,60 @@ describe("Player Class", () => {
 
 		});
 
-		describe("move()", () => {
+		describe("handleInput()", () => {
 			const player = new Player();
 			beforeEach(() => {
 				zone = new Zone();
-				zone.area[1][1].character = player;
-				player.zoneCoords = { row: 1, column: 1 };
-				player.zone = zone;
+				zone.placeCharacter(player, {row: 1, column: 1});
 			});
 
-			it("it should call zone.moveCharacter() with appropriate coordinates based on the input", () => {
-				const spiedFunc = Sinon.spy(zone, "moveCharacter");
-				player.move({ horizontal: "right", vertical: "up"});
+			it("it should call zone.moveCharacter() if the tile is empty", () => {
+				const stub = Sinon.stub(zone, "moveCharacter");
+				/**
+				 * For some reason the above stub still calls zone.emitEvent() and causes 
+				 * an exception as the test zone will emit to the game singleton
+				 * and throw as the game instance doesn't have a controller reference.
+				 * 
+				 * The below stub works as expected and prevents the exception.
+				 */
+				const stubThatIsNecessaryForSomeReason = Sinon.stub(zone, "emitEvent");
 
 				// Redefining coords here to avoid TypeScript thinking they could be undefined.
 				player.zoneCoords = { row: 1, column: 1 };
+
+				player.handleInput({ horizontal: "right", vertical: "up"});
 
 				const expectedCoords: ZoneCoordinate = { 
 					row: player.zoneCoords.row + 1, 
 					column: player.zoneCoords.column + 1,
 				};
 
-				expect(spiedFunc.calledOnceWithExactly(player, expectedCoords));
+				expect(stub.calledOnceWithExactly(player, expectedCoords));
+				stub.restore();
+				stubThatIsNecessaryForSomeReason.restore();
+			});
+
+			it("it should call reduceActionPoints() if player can move into tile", () => {
+				const preventMovement = Sinon.stub(zone, "moveCharacter");
+				const reduceFunc = Sinon.stub(player, "reduceActionPoints");
+
+				player.handleInput({ horizontal: "right", vertical: "up"});
+
+				expect(reduceFunc.calledOnce).to.be.true;
+				preventMovement.restore();
+				reduceFunc.restore();
+			});
+
+			it("it should call attack() with a character if there is one in the targeted square", () => {
+				const enemy = new Swordsman();
+				zone.placeCharacter(enemy, {row: 0, column: 1});
+
+				const stub = Sinon.stub(player, "attack");
+				
+				player.handleInput({vertical: "up"});
+
+				expect(stub.calledOnceWith(enemy)).to.be.true;
+				stub.restore();
 			});
 		});
 
@@ -171,6 +205,37 @@ describe("Player Class", () => {
 			it("it should return \"You have died.\"", () => {
 				const actual = player.generateDeathMessage();
 				expect(actual).to.equal("You have died.");
+			});
+		});
+
+		describe("endTurn", () => {
+			let restoreAP: Sinon.SinonStub;
+			let emitEvent: Sinon.SinonStub;
+
+			beforeEach(() => {
+				restoreAP = Sinon.stub(player, "restoreAP");
+				emitEvent = Sinon.stub(player, "emitEvent");
+			});
+
+			afterEach(() => {
+				restoreAP.restore();
+				emitEvent.restore();
+			});
+
+			it("it should call the player's restoreAP() method", () => {
+				player.endTurn();
+
+				expect(restoreAP.calledOnce).to.be.true;
+			});
+
+			it("it should call emitEvent() with a turn over event", () => {
+				player.endTurn();
+
+				expect(emitEvent.calledOnce).to.be.true;
+				const [evt] = emitEvent.args[0];
+
+				expect(evt instanceof GameEvent).to.be.true;
+				expect(evt.type === "TURN_OVER").to.be.true;
 			});
 		});
 	});

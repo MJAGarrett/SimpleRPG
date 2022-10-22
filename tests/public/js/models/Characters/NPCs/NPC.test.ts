@@ -10,4 +10,8 @@ describe("NPC Abstract Class", () => {
 			expect(swordsman.generateDeathMessage()).to.equal(`${swordsman.name} has died.`);
 		});
 	});
+
+	describe("endTurn()", () => {
+		// TODO: implement when AI is added.
+	});
 });

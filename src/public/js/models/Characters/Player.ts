@@ -1,3 +1,4 @@
+import { GameEvent } from "../Events/GameEvent.js";
 import { ZoneCoordinate } from "../Game Map/Zone/Zone.js";
 import { Equipable, InventoryItem } from "../Items/Interfaces.js";
 import Character, {CharacterEquipment} from "./Character.js";
@@ -40,7 +41,7 @@ class Player extends Character {
 		return this.equipment[slot] === null;
 	}
 
-	move(input: MovementCommand): void {
+	handleInput(input: MovementCommand): void {
 		if (!this.zoneCoords || !this.zone) throw new Error("Character not placed in a zone");
 		let { row, column }: ZoneCoordinate = this.zoneCoords;
 		if (input.horizontal) {
@@ -59,11 +60,23 @@ class Player extends Character {
 				row += 1;
 			}
 		}
-		this.zone.moveCharacter(this, {row, column});
+		const enemy = this.zone.getTile({row, column}).getCharacterRef();
+		if (enemy) {
+			this.attack(enemy);
+		}
+		else {
+			this.reduceActionPoints(100);
+			this.zone.moveCharacter(this, {row, column});
+		}
 	}
 
 	generateDeathMessage(): string {
 		return "You have died.";
+	}
+
+	endTurn(): void {
+		this.restoreAP();
+		this.emitEvent(GameEvent.endTurnEvent());
 	}
 }
 

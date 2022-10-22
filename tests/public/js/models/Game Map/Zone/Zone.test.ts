@@ -1,18 +1,26 @@
 import {expect} from "chai";
 import Sinon from "sinon";
-import Swordsman from "../../../../../../src/public/js/models/Characters/NPCs/Swordsman.js";
 import Player from "../../../../../../src/public/js/models/Characters/Player.js";
 import { GameEvent } from "../../../../../../src/public/js/models/Events/GameEvent.js";
 import Tile from "../../../../../../src/public/js/models/Game Map/Tile/Tile.js";
 import Zone, { ZoneCoordinate } from "../../../../../../src/public/js/models/Game Map/Zone/Zone.js";
-import { Breastplate } from "../../../../../../src/public/js/models/Items/Armor and Clothing/Armor.js";
-import Sword from "../../../../../../src/public/js/models/Items/Weapons/Sword.js";
 import game from "../../../../../../src/public/js/models/Game.js";
 
 describe("Zone", () => {
 	let zone: Zone;
+	const stubbedMethods: any[] = [];
+	let handleEventStub: any;
+
 	beforeEach(() => {
 		zone = new Zone();
+		stubbedMethods.push(Sinon.stub(game, "notifyController"));
+		handleEventStub = Sinon.stub(game, "handleEvent");
+		stubbedMethods.push(handleEventStub);
+	});
+
+	afterEach(() => {
+		game.controller = undefined;
+		stubbedMethods.forEach((method) => method.restore());
 	});
 
 	describe("Constructor", () => {
@@ -50,27 +58,11 @@ describe("Zone", () => {
 				player = new Player();
 			});
 
-			it("it should call attack() with the appropriate characters if there is already a character in the square", () => {
-				const attackingChar = new Player();
-				const defendingChar = new Player();
-				zone.area[0][1].character = attackingChar;
-				zone.area[0][0].character = defendingChar;
-
-				const attackSpy = Sinon.spy(zone, "attack");
-
-				zone.moveCharacter(attackingChar, {
-					row: 0,
-					column: 0,
-				});
-
-				expect(attackSpy.calledWithExactly(attackingChar, defendingChar)).to.be.true;
-			});
-
 			it("it should not call removeCharacter() or addCharacter() on tiles if there is a character already in a square", () => {
 				const attackingChar = new Player();
 				const defendingChar = new Player();
-				zone.area[0][1].character = attackingChar;
-				zone.area[0][0].character = defendingChar;
+				zone.placeCharacter(attackingChar, {row: 0, column: 1});
+				zone.placeCharacter(defendingChar, {row: 0, column: 0});
 
 				const attackTileSpy = Sinon.spy(zone.area[0][1], "removeCharacter");
 				const defendTileSpy = Sinon.spy(zone.area[0][0], "addCharacter");
@@ -189,83 +181,6 @@ describe("Zone", () => {
 			 */
 		});
 
-		describe("attack()", () => {
-			let player: Player;
-			let enemy: Swordsman;
-			beforeEach(() => {
-				player = new Player();
-				player.equipItem(new Sword());
-				enemy = new Swordsman();
-				zone.placeCharacter(player, {row: 2, column: 2});
-				zone.placeCharacter(enemy, {row: 2, column: 3});
-				game.currentZone = zone;
-				game.player = player;
-			});
-
-			it("it should call the attacking character's calcDamage() method and save the result", () => {
-				const spiedAttacker = Sinon.spy(player, "calcDamage");
-
-				zone.attack(player, enemy);
-
-				expect(spiedAttacker.calledOnce).to.be.true;
-				expect(spiedAttacker.returnValues[0]).to.be.a("number");
-			});
-
-			it("it should call the defending character's calcDefense() method and save the result", () => {
-				const spiedDefender = Sinon.spy(enemy, "calcDefense");
-
-				zone.attack(player, enemy);
-
-				expect(spiedDefender.calledOnce).to.be.true;
-				expect(spiedDefender.returnValues[0]).to.be.a("number");
-			});
-
-			it("it should calculate an attack value and subtract it from the defending character's health", () => {
-
-				/**
-				 * The current formula for calculating damage negation:
-				 * defense / (attack * 2) = reduction %
-				 * cap reduction at 80%.
-				 */
-
-				enemy.equipment.shirt = new Breastplate();
-				const attackPower = player.calcDamage();
-				const defensePower = enemy.calcDefense();
-				const ratio = defensePower / (attackPower * 2);
-				const healthBefore = enemy.health;
-				let expectedDamage: number;
-
-				if (ratio >= .8) {
-					expectedDamage = attackPower * .2;
-				}
-				else {
-					expectedDamage = attackPower * (1 - ratio);
-				}
-				
-				zone.attack(player, enemy);
-				
-				const healthAfter = enemy.health;
-				expect(healthBefore - healthAfter).to.equal(expectedDamage);
-			});
-
-			it("it should call the instance's emitEvent() method with a message detailing the attack", () => {
-				
-				const spiedFunc = Sinon.spy(zone, "emitEvent");
-				const expectedMessage = JSON.stringify(GameEvent.messageEvent({
-					color: "white",
-					message: `You deal 35 damage to ${enemy.name}.`,
-				}));
-
-				zone.attack(player, enemy);
-
-				expect(spiedFunc.calledOnce);
-				const [message] = spiedFunc.args[0];
-				const comparableMessage = JSON.stringify(message);
-				
-				expect(comparableMessage).to.equal(expectedMessage);
-			});
-		});
-
 		describe("emitEvent()", () => {
 
 			afterEach(() => {
@@ -278,10 +193,9 @@ describe("Zone", () => {
 					message: "test",
 				});
 				game.currentZone = zone;
-				const spy = Sinon.spy(game, "handleEvent");
 
 				zone.emitEvent(message);
-				expect(spy.calledOnceWith(message)).to.be.true;
+				expect(handleEventStub.calledOnceWith(message)).to.be.true;
 
 			});
 		});

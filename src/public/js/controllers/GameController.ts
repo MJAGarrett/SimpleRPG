@@ -28,6 +28,7 @@ class GameController {
 			if (component.handleType === event.type) {
 				component.updateComponent(event);
 			}
+			this.notify();
 		}
 	}
 
@@ -71,6 +72,7 @@ class GameController {
 		window.addEventListener("keydown", (e) => {
 			const movement: MovementCommand = {};
 			const code = e.code;
+			if (code === "Space" || code === "Numpad5") this.gameModel.player.endTurn();
 			switch (true) {
 			case code === "KeyA" || code === "Numpad4":
 				e.preventDefault();
@@ -110,8 +112,7 @@ class GameController {
 				break;
 			}
 			if (Object.keys(movement).length > 0) {
-				this.gameModel.player.move(movement);
-				this.renderZone(this.gameModel.currentZone as Zone);
+				this.gameModel.player.handleInput(movement);
 			}
 		});
 	}

@@ -9,6 +9,10 @@ abstract class NPC extends Character {
 	generateDeathMessage(): string {
 		return `${this.name} has died.`;
 	}
+
+	endTurn(): void {
+		// TODO: implement when AI system is created.
+	}
 }
 
 export default NPC;

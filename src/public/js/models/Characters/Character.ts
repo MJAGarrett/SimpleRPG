@@ -26,6 +26,8 @@ function initializeEquipment(): CharacterEquipment {
 abstract class Character {
 	abstract name: string;
 	health: number;
+	actionPoints: number = 100;
+	speed: number = 100;
 	inventory: InventoryItem[];
 	level: number;
 	equipment: CharacterEquipment;
@@ -88,6 +90,51 @@ abstract class Character {
 	emitEvent(evt: GameEvent): void {
 		this.zone?.emitEvent(evt);
 	}
+
+	reduceActionPoints(cost: number): void {
+		this.actionPoints -= cost;
+		
+		if (this.actionPoints <= 0) {
+			this.actionPoints = this.speed + this.actionPoints;
+			this.endTurn();
+		}
+	}
+
+	attack(enemy: Character): void {
+		const attackPower = this.calcDamage();
+		const defensePower = enemy.calcDefense();
+		const defRatio: number = defensePower / (attackPower * 2);
+
+		let finalAttackPower: number;
+
+		if (defRatio >= .80) {
+			finalAttackPower = attackPower * .2;
+		} 
+		else {
+			finalAttackPower = attackPower * (1 - defRatio);
+		} 
+
+		const attackMessage = GameEvent.attackMessage({attacker: this, defender: enemy, damage: finalAttackPower});
+
+		this.emitEvent(attackMessage);
+		this.reduceActionPoints(50);
+		enemy.reduceHealth(finalAttackPower);
+	}
+
+	restoreAP(): void {
+		if (this.actionPoints < this.speed) {
+			this.actionPoints += this.speed;
+		} 
+		if (this.actionPoints > this.speed) {
+			this.actionPoints = this.speed;
+		}
+	}
+
+	getAP(): number {
+		return this.actionPoints;
+	}
+
+	abstract endTurn(): void;
 }
 
 export default Character;

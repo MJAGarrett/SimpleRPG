@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import Sinon from "sinon";
 import Character from "../../../../../src/public/js/models/Characters/Character.js";
+import Swordsman from "../../../../../src/public/js/models/Characters/NPCs/Swordsman.js";
 import Player from "../../../../../src/public/js/models/Characters/Player.js";
 import { GameEvent } from "../../../../../src/public/js/models/Events/GameEvent.js";
 import Zone, { ZoneCoordinate } from "../../../../../src/public/js/models/Game Map/Zone/Zone.js";
@@ -59,8 +60,6 @@ describe("Character Abstract Class", () => {
 				expect(spy.calledOnce).to.be.true;
 				const [recievedMessage] = spy.args[0];
 				const actualMessage = JSON.stringify(recievedMessage);
-				console.log(actualMessage);
-				console.log(expectedMessage);
 				
 				expect(actualMessage === expectedMessage).to.be.true;
 			});
@@ -134,6 +133,97 @@ describe("Character Abstract Class", () => {
 			});
 		});
 
+		describe("reduceActionPoints()", () => {
+
+			it("it should reduce a character's action points by a specific amount", () => {
+				const reduction = 20;
+				const APBefore = player.actionPoints;
+				player.reduceActionPoints(reduction);
+				const APAfter = player.actionPoints;
+
+				expect(APBefore - APAfter).to.equal(reduction);
+			});
+
+			it("it should call endTurn() if action points are reduced to 0 or below", () => {
+				const spy = Sinon.spy(player, "endTurn");
+				player.reduceActionPoints(120);
+				expect(spy.calledOnce).to.be.true;
+			});
+		});
+
+		describe("attack()", () => {
+			let player: Player;
+			let enemy: Swordsman;
+			beforeEach(() => {
+				player = new Player();
+				player.equipItem(new Sword());
+				enemy = new Swordsman();
+			});
+
+			it("it should call the attacking character's calcDamage() method and save the result", () => {
+				const spiedAttacker = Sinon.spy(player, "calcDamage");
+
+				player.attack(enemy);
+
+				expect(spiedAttacker.calledOnce).to.be.true;
+				expect(spiedAttacker.returnValues[0]).to.be.a("number");
+			});
+
+			it("it should call the defending character's calcDefense() method and save the result", () => {
+				const spiedDefender = Sinon.spy(enemy, "calcDefense");
+
+				player.attack(enemy);
+
+				expect(spiedDefender.calledOnce).to.be.true;
+				expect(spiedDefender.returnValues[0]).to.be.a("number");
+			});
+
+			it("it should calculate an attack value and subtract it from the defending character's health", () => {
+
+				/**
+				 * The current formula for calculating damage negation:
+				 * defense / (attack * 2) = reduction %
+				 * cap reduction at 80%.
+				 */
+
+				enemy.equipment.shirt = new Breastplate();
+				const attackPower = player.calcDamage();
+				const defensePower = enemy.calcDefense();
+				const ratio = defensePower / (attackPower * 2);
+				const healthBefore = enemy.health;
+				let expectedDamage: number;
+
+				if (ratio >= .8) {
+					expectedDamage = attackPower * .2;
+				}
+				else {
+					expectedDamage = attackPower * (1 - ratio);
+				}
+				
+				player.attack(enemy);
+				
+				const healthAfter = enemy.health;
+				expect(healthBefore - healthAfter).to.equal(expectedDamage);
+			});
+
+			it("it should call the instance's emitEvent() method with a message detailing the attack", () => {
+				
+				const spiedFunc = Sinon.spy(player, "emitEvent");
+				const expectedMessage = JSON.stringify(GameEvent.messageEvent({
+					color: "white",
+					message: `You deal 35 damage to ${enemy.name}.`,
+				}));
+
+				player.attack(enemy);
+
+				expect(spiedFunc.calledOnce);
+				const [message] = spiedFunc.args[0];
+				const comparableMessage = JSON.stringify(message);
+				
+				expect(comparableMessage).to.equal(expectedMessage);
+			});
+		});
+
 		describe("emitEvent()", () => {
 			let tempZone: Zone;
 			
@@ -151,6 +241,37 @@ describe("Character Abstract Class", () => {
 
 				player.emitEvent(testEvent);
 				expect(spy.calledOnceWith(testEvent)).to.be.true;
+			});
+		});
+
+		describe("restore AP", () => {
+
+			it("it should restore a character's AP by an amount equal to their speed", () => {
+				player.actionPoints = -100;
+				player.restoreAP();
+
+				expect(player.actionPoints).to.equal(-100 + player.speed);
+			});
+
+			it("it should not give a player more max AP than their speed", () => {
+				player.actionPoints = player.speed;
+				player.restoreAP();
+
+				expect(player.actionPoints).to.equal(player.speed);
+			});
+		});
+
+		describe("getAP()", () => {
+
+			it("it should return the player's current action points", () => {
+				const AP = player.getAP();
+
+				expect(AP).to.equal(player.actionPoints);
+
+				player.actionPoints = 40;
+				const newAP = player.getAP();
+
+				expect(newAP).to.equal(player.actionPoints);
 			});
 		});
 	});
