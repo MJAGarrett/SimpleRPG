@@ -19,7 +19,6 @@ class GameController {
 		this.initializeComponents();
 	}
 	notify(): void {
-		if (!this.gameModel) throw new Error("No game registered with this controller");
 		this.renderZone(this.gameModel.currentZone as Zone);
 	}
 
@@ -32,7 +31,7 @@ class GameController {
 		}
 	}
 
-	private renderZone(zone: Zone): void {
+	renderZone(zone: Zone): void {
 		const areaTiles: HTMLElement[] = [];
 	
 		for (const row of zone.area) {
@@ -44,7 +43,7 @@ class GameController {
 		this.gameArea?.replaceChildren(...areaTiles);
 	}
 
-	private renderTile(tile: Tile): HTMLElement {
+	renderTile(tile: Tile): HTMLElement {
 		const tileDiv = document.createElement("div");
 		// add sprite style info here once sprites are in
 		tileDiv.classList.add(tile.sprite);
