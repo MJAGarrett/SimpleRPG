@@ -1,7 +1,6 @@
 import { expect } from "chai";
 import Sinon from "sinon";
-
-import game from "../../../../src/public/js/models/Game.js";
+import Game from "../../../../src/public/js/models/Game.js";
 import GameController from "../../../../src/public/js/controllers/GameController.js";
 import { GameEvent } from "../../../../src/public/js/models/Events/GameEvent.js";
 import Player from "../../../../src/public/js/models/Characters/Player.js";
@@ -20,8 +19,10 @@ class ControllerFake {
 
 describe("Game Class", () => {
 	let controller: GameController;
+	let game: Game;
 
 	beforeEach(() => {
+		game = new Game();
 		controller = new ControllerFake() as GameController;
 		game.controller = controller;
 	});
@@ -50,7 +51,7 @@ describe("Game Class", () => {
 
 		describe("handleEvent()", () => {
 
-			it("it should recieve an event and pass it on to the controller if appropriate", () => {
+			it("it should receive an event and pass it on to the controller if appropriate", () => {
 				const message = GameEvent.messageEvent({
 					color: "red",
 					message: "test",

@@ -16,7 +16,7 @@ class Game {
 	 * A Testing method used to initialize the game area.
 	 */
 	initialize(): void {
-		this.currentZone = new Zone();
+		this.currentZone = new Zone(this);
 		this.currentZone.placeCharacter(this.player, {row: 0, column: 0});
 		this.currentZone.placeCharacter(NPCGenerator.swordsman(), {row: 4, column: 2});
 	}
@@ -45,4 +45,4 @@ class Game {
 	}
 }
 
-export default new Game();
+export default Game;

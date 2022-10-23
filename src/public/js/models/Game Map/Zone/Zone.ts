@@ -1,7 +1,7 @@
 import Character from "../../Characters/Character.js";
 import Tile from "../Tile/Tile.js";
-import game from "../../Game.js";
 import { GameEvent } from "../../Events/GameEvent.js";
+import Game from "../../Game.js";
 
 interface ZoneCoordinate {
 	row: number,
@@ -10,8 +10,8 @@ interface ZoneCoordinate {
 
 class Zone {
 	area: Array<Array<Tile>>;
-	game: typeof game;
-	constructor() {
+	game: Game;
+	constructor(game: Game) {
 		const area = new Array(10);
 
 		for (let index = 0; index < area.length; index++) {

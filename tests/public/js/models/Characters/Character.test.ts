@@ -5,17 +5,21 @@ import Swordsman from "../../../../../src/public/js/models/Characters/NPCs/Sword
 import Player from "../../../../../src/public/js/models/Characters/Player.js";
 import { GameEvent } from "../../../../../src/public/js/models/Events/GameEvent.js";
 import Zone, { ZoneCoordinate } from "../../../../../src/public/js/models/Game Map/Zone/Zone.js";
+import Game from "../../../../../src/public/js/models/Game.js";
 import { Breastplate, Helmet } from "../../../../../src/public/js/models/Items/Armor and Clothing/Armor.js";
 import Sword from "../../../../../src/public/js/models/Items/Weapons/Sword.js";
 
 describe("Character Abstract Class", () => {
 
 	describe("Methods", () => {
-
+		let tempZone: Zone;
 		let player: Character;
+		let game: Game;
 
 		beforeEach(() => {
 			player = new Player();
+			game = new Game();
+			tempZone = new Zone(game);
 		});
 
 		describe("reduceHealth()", () => {
@@ -28,28 +32,27 @@ describe("Character Abstract Class", () => {
 			});
 
 			it("it should call the character's zone's removeCharacter() method with the character only if their health is reduced to 0 or below", () => {
-				const tempZone = new Zone();
 				tempZone.placeCharacter(player, {row: 2, column: 0});
 				player.health = 100;
 				const nonLethalReduction = player.health / 2;
 
-				const spy = Sinon.spy(tempZone, "removeCharacter");
+				const stub = Sinon.stub(tempZone, "removeCharacter");
 
 				player.reduceHealth(nonLethalReduction);
 
-				expect(spy.called).to.be.false;
+				expect(stub.called).to.be.false;
 				
 				player.reduceHealth(player.health + 10);
 
-				expect(spy.calledOnceWithExactly(player)).to.be.true;
+				expect(stub.calledOnceWithExactly(player)).to.be.true;
+				stub.restore();
 			});
 
 			it("it should call the character's emitEvent() method with a deathMessage when the character's health falls to 0 or below", () => {
-				const tempZone = new Zone();
 				tempZone.placeCharacter(player, {row: 0, column: 0});
 
 				const dmgToKill = player.health * 2;
-				const spy = Sinon.spy(player, "emitEvent");
+				const stub = Sinon.stub(player, "emitEvent");
 				const expectedMessage = JSON.stringify(GameEvent.messageEvent({
 					color: "red",
 					message: player.generateDeathMessage(),
@@ -57,11 +60,12 @@ describe("Character Abstract Class", () => {
 
 				player.reduceHealth(dmgToKill);
 
-				expect(spy.calledOnce).to.be.true;
-				const [recievedMessage] = spy.args[0];
+				expect(stub.calledOnce).to.be.true;
+				const [recievedMessage] = stub.args[0];
 				const actualMessage = JSON.stringify(recievedMessage);
 				
 				expect(actualMessage === expectedMessage).to.be.true;
+				stub.restore();
 			});
 		});
 
@@ -80,12 +84,11 @@ describe("Character Abstract Class", () => {
 		});
 
 		describe("updateZoneInfo()", () => {
-			const zone: Zone = new Zone();
 
 			it("it should update a player's zone property and its zoneCoords property", () => {
-				player.updateZoneInfo(zone, {row: 0, column: 0});
+				player.updateZoneInfo(tempZone, {row: 0, column: 0});
 
-				expect(player.zone).to.equal(zone);
+				expect(player.zone).to.equal(tempZone);
 				expect(player.zoneCoords?.row).to.equal(0);
 				expect(player.zoneCoords?.column).to.equal(0);
 			});
@@ -228,7 +231,7 @@ describe("Character Abstract Class", () => {
 			let tempZone: Zone;
 			
 			beforeEach(() => {
-				tempZone = new Zone();
+				tempZone = new Zone(game);
 				tempZone.placeCharacter(player, {row: 0, column: 0});
 			});
 
@@ -237,10 +240,11 @@ describe("Character Abstract Class", () => {
 					color: "blue",
 					message: "test",
 				});
-				const spy = Sinon.spy(tempZone, "emitEvent");
+				const stub = Sinon.stub(tempZone, "emitEvent");
 
 				player.emitEvent(testEvent);
-				expect(spy.calledOnceWith(testEvent)).to.be.true;
+				expect(stub.calledOnceWith(testEvent)).to.be.true;
+				stub.restore();
 			});
 		});
 

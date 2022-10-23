@@ -9,6 +9,7 @@ import Zone, { ZoneCoordinate } from "../../../../../src/public/js/models/Game M
 import Sinon from "sinon";
 import Swordsman from "../../../../../src/public/js/models/Characters/NPCs/Swordsman.js";
 import { GameEvent } from "../../../../../src/public/js/models/Events/GameEvent.js";
+import Game from "../../../../../src/public/js/models/Game.js";
 
 // const should = chai.should();
 describe("Player Class", () => {
@@ -146,7 +147,8 @@ describe("Player Class", () => {
 		describe("handleInput()", () => {
 			const player = new Player();
 			beforeEach(() => {
-				zone = new Zone();
+				const game = new Game();
+				zone = new Zone(game);
 				zone.placeCharacter(player, {row: 1, column: 1});
 			});
 

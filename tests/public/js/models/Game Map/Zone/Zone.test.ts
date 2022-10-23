@@ -4,22 +4,23 @@ import Player from "../../../../../../src/public/js/models/Characters/Player.js"
 import { GameEvent } from "../../../../../../src/public/js/models/Events/GameEvent.js";
 import Tile from "../../../../../../src/public/js/models/Game Map/Tile/Tile.js";
 import Zone, { ZoneCoordinate } from "../../../../../../src/public/js/models/Game Map/Zone/Zone.js";
-import game from "../../../../../../src/public/js/models/Game.js";
+import Game from "../../../../../../src/public/js/models/Game.js";
 
 describe("Zone", () => {
 	let zone: Zone;
+	let game: Game;
 	const stubbedMethods: any[] = [];
 	let handleEventStub: any;
 
 	beforeEach(() => {
-		zone = new Zone();
+		game = new Game();
+		zone = new Zone(game);
 		stubbedMethods.push(Sinon.stub(game, "notifyController"));
 		handleEventStub = Sinon.stub(game, "handleEvent");
 		stubbedMethods.push(handleEventStub);
 	});
 
 	afterEach(() => {
-		game.controller = undefined;
 		stubbedMethods.forEach((method) => method.restore());
 	});
 
@@ -54,7 +55,7 @@ describe("Zone", () => {
 			let player: Player;
 
 			beforeEach(() => {
-				zone = new Zone();
+				zone = new Zone(game);
 				player = new Player();
 			});
 
@@ -143,7 +144,7 @@ describe("Zone", () => {
 					row: 0,
 					column: 0,
 				};
-				zone = new Zone();
+				zone = new Zone(game);
 			});
 
 			it("it should call the appropriate tile's addCharacter method with the Character reference it was passed", () => {
@@ -183,10 +184,6 @@ describe("Zone", () => {
 
 		describe("emitEvent()", () => {
 
-			afterEach(() => {
-				game.currentZone = undefined;
-			});
-
 			it("it should pass an event onto the game's handleEvent() method", () => {
 				const message = GameEvent.messageEvent({
 					color: "white",
@@ -196,7 +193,6 @@ describe("Zone", () => {
 
 				zone.emitEvent(message);
 				expect(handleEventStub.calledOnceWith(message)).to.be.true;
-
 			});
 		});
 	});

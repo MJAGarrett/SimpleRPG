@@ -7,10 +7,10 @@ import Controller from "./Controller.js";
 import MessageLogController from "./ComponentControllers/MessageLogController.js";
 
 class GameController {
-	gameModel: typeof Game;
+	gameModel: Game;
 	components: Controller[];
 	gameArea: HTMLElement | null;
-	constructor(game: typeof Game) {
+	constructor(game: Game) {
 		this.components = [];
 		this.gameModel = game;
 		game.registerController(this);
