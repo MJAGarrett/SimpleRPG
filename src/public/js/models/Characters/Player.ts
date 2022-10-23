@@ -60,7 +60,15 @@ class Player extends Character {
 				row += 1;
 			}
 		}
-		const enemy = this.zone.getTile({row, column}).getCharacterRef();
+		let enemy: Character | null;
+		try {
+			// getTile could throw if if looking for a tile that's out of bounds.
+			enemy = this.zone.getTile({row, column}).getCharacterRef();
+		} 
+		catch (err) {
+			// Just prevent further processing.
+			return;
+		}
 		if (enemy) {
 			this.attack(enemy);
 		}
