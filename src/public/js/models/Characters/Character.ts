@@ -3,6 +3,8 @@ import Zone, { ZoneCoordinate } from "../Game Map/Zone/Zone.js";
 import { Weapon } from "../Items/Weapons/Weapons.js";
 import { Armor } from "../Items/Armor and Clothing/Armor.js";
 import { GameEvent } from "../Events/GameEvent.js";
+import StatusEffect from "../Items/Consumables/StatusEffect.js";
+import Consumable from "../Items/Consumables/IConsumable.js";
 
 interface CharacterEquipment {
 	weapon: Equipable | null,
@@ -23,24 +25,67 @@ function initializeEquipment(): CharacterEquipment {
 	return basicEquipment;
 }
 
+export interface CharacterStats {
+	health: {
+		current: number,
+		max: number,
+	},
+	actionPoints: number,
+	speed: {
+		current: number,
+		base: number,
+	},
+	level: number,
+}
+
 abstract class Character {
 	abstract name: string;
-	health: number;
-	actionPoints: number = 100;
-	speed: number = 100;
+	stats: CharacterStats;
 	inventory: InventoryItem[];
-	level: number;
 	equipment: CharacterEquipment;
 	zoneCoords?: ZoneCoordinate;
+	statusEffects: StatusEffect[] = [];
 	// TODO: rework
 	zone?: Zone;
 	constructor(health?: number, inventory?: InventoryItem[], level?: number) {
-		this.health = health || 100;
+		this.stats = {
+			health: {
+				current: health || 100,
+				max: 100,
+			},
+			level: level || 1,
+			actionPoints: 100,
+			speed: {
+				current: 100,
+				base: 100,
+			},
+		};
 		this.inventory = inventory || [];
-		this.level = level || 1;
 		this.equipment = initializeEquipment();
 		this.zoneCoords = undefined;
 		this.zone = undefined;
+	}
+
+	get health(): number {
+		return this.stats.health.current;
+	}
+	set health(num: number) {
+		this.stats.health.current = num;
+	}
+	get actionPoints(): number {
+		return this.stats.actionPoints;
+	}
+	set actionPoints(num: number) {
+		this.stats.actionPoints = num;
+	}
+	get speed(): number {
+		return this.stats.speed.current;
+	}
+	set speed(num: number) {
+		this.stats.speed.current = num;
+	}
+	get level(): number {
+		return this.stats.level;
 	}
 	
 	reduceHealth(damage: number): void {
@@ -54,6 +99,15 @@ abstract class Character {
 			});
 			this.emitEvent(deathEvent);
 		} 
+	}
+
+	increaseHealth(amount: number): void {
+		if (this.health + amount >= this.stats.health.max) {
+			this.health = this.stats.health.max;
+		}
+		else {
+			this.health += amount;
+		}
 	}
 
 	updateCoordinates(coords: ZoneCoordinate): void {
@@ -123,7 +177,7 @@ abstract class Character {
 
 	restoreAP(): void {
 		if (this.actionPoints < this.speed) {
-			this.actionPoints += this.speed;
+			this.actionPoints = this.actionPoints + this.speed;
 		} 
 		if (this.actionPoints > this.speed) {
 			this.actionPoints = this.speed;
@@ -132,6 +186,39 @@ abstract class Character {
 
 	getAP(): number {
 		return this.actionPoints;
+	}
+
+	/**
+	 * WIP
+	 * 
+	 * Intention: 
+	 * Processes status effects and determines whether a character has enough AP to 
+	 * start their turn. Skips turn if not.
+	 */
+	startTurn(): void {
+		this.restoreAP();
+		const expiredEffects: StatusEffect[] = [];
+		for (const effect of this.statusEffects) {
+			if (effect.duration > 0) {
+				effect.applyEffect(this);
+			}
+			if (effect.duration === 0) expiredEffects.push(effect);
+		}
+		if (expiredEffects.length > 0) {
+			this.statusEffects = this.statusEffects.filter((effect) => {
+				if (expiredEffects.includes(effect)) return false;
+				return true;
+			});
+		}
+	}
+
+	consumeItem(item: Consumable): void {
+		const effect = item.consume();
+		this.statusEffects.push(effect);
+		this.inventory = this.inventory.filter((inventoryItem) => {
+			if (inventoryItem === item) return false;
+			return true;
+		});
 	}
 
 	abstract endTurn(): void;

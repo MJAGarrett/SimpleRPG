@@ -7,6 +7,9 @@ import { GameEvent } from "../../../../../src/public/js/models/Events/GameEvent.
 import Zone, { ZoneCoordinate } from "../../../../../src/public/js/models/Game Map/Zone/Zone.js";
 import Game from "../../../../../src/public/js/models/Game.js";
 import { Breastplate, Helmet } from "../../../../../src/public/js/models/Items/Armor and Clothing/Armor.js";
+import Consumable from "../../../../../src/public/js/models/Items/Consumables/IConsumable.js";
+import HealthPotion from "../../../../../src/public/js/models/Items/Consumables/Potions/HealthPotion.js";
+import StatusEffect, { Heal } from "../../../../../src/public/js/models/Items/Consumables/StatusEffect.js";
 import Sword from "../../../../../src/public/js/models/Items/Weapons/Sword.js";
 
 describe("Character Abstract Class", () => {
@@ -276,6 +279,90 @@ describe("Character Abstract Class", () => {
 				const newAP = player.getAP();
 
 				expect(newAP).to.equal(player.actionPoints);
+			});
+		});
+
+		describe("processTurn()", () => {
+			let effect: StatusEffect;
+			let stub: Sinon.SinonStub;
+
+			beforeEach(() => {
+				effect = new Heal(5, 8);
+				stub = Sinon.stub(effect, "applyEffect");
+				player.statusEffects = [effect];
+			});
+
+			afterEach(() => {		
+				stub.reset();
+			});
+
+			after(() => {
+				stub.restore();
+			});
+
+			it("it should process the current status effects on a character", () => {
+				player.startTurn();
+				expect(stub.calledOnceWith(player)).to.be.true;
+			});
+
+			it("it should remove status effects with a duration of <= 0", () => {
+				effect.duration = 0;
+
+				player.startTurn();
+				expect(player.statusEffects.length).to.equal(0);
+			});
+		});
+
+		describe("consumeItem()", () => {
+
+			let consumable: Consumable;
+
+			beforeEach(() => {
+				consumable = new HealthPotion(5, 5);
+				player.inventory = [consumable];
+			});
+
+			it("it should call the consumable item's consume() method", () => {
+				const spy = Sinon.spy(consumable, "consume");
+				player.consumeItem(consumable);
+				spy.restore();
+
+				expect(spy.calledOnce).to.be.true;
+			});
+
+			it("it should add the status effect returned from the consumable to the character's statusEffects array", () => {
+				player.consumeItem(consumable);
+
+				expect(player.statusEffects.includes(consumable.effect)).to.be.true;
+			});
+
+			it("it should remove the consumable from the character's inventory", () => {
+				player.consumeItem(consumable);
+
+				expect(player.inventory.includes(consumable)).to.be.false;
+			});
+		});
+
+		describe("increaseHealth()", () => {
+
+			it("it should increase a character's health by the amount given, if the sum of the current health \
+			plus the amount is less than the character's max health stat", () => {
+				const initial: number = 50;
+				const increase: number = 5;
+				player.health = initial;
+				player.increaseHealth(increase);
+
+				expect(player.health).to.equal(initial + increase);
+			});
+
+			it("it should increase a character's health up to their max health stat and no further", () => {
+				const increase: number = 5;
+				player.health = player.stats.health.max - increase;
+
+				for (let i = 0; i < 5; i++) {
+					player.increaseHealth(increase);
+				}
+				expect(player.health).to.equal(player.stats.health.max);
 			});
 		});
 	});

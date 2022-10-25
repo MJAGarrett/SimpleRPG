@@ -211,23 +211,14 @@ describe("Player Class", () => {
 		});
 
 		describe("endTurn", () => {
-			let restoreAP: Sinon.SinonStub;
 			let emitEvent: Sinon.SinonStub;
 
 			beforeEach(() => {
-				restoreAP = Sinon.stub(player, "restoreAP");
 				emitEvent = Sinon.stub(player, "emitEvent");
 			});
 
 			afterEach(() => {
-				restoreAP.restore();
 				emitEvent.restore();
-			});
-
-			it("it should call the player's restoreAP() method", () => {
-				player.endTurn();
-
-				expect(restoreAP.calledOnce).to.be.true;
 			});
 
 			it("it should call emitEvent() with a turn over event", () => {

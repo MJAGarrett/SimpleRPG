@@ -38,8 +38,8 @@ class Game {
 	takeTurn(): void {
 		// TODO: implement AI turns
 		this.notifyController();
+		this.player.startTurn();
 		if (this.player.getAP() <= 0) {
-			this.player.restoreAP();
 			this.takeTurn();
 		}
 	}

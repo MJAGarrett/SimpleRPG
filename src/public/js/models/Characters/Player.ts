@@ -1,7 +1,7 @@
 import { GameEvent } from "../Events/GameEvent.js";
 import { ZoneCoordinate } from "../Game Map/Zone/Zone.js";
 import { Equipable, InventoryItem } from "../Items/Interfaces.js";
-import Character, {CharacterEquipment} from "./Character.js";
+import Character, {CharacterEquipment, CharacterStats} from "./Character.js";
 
 type EquipSlot = keyof CharacterEquipment;
 
@@ -10,13 +10,35 @@ interface MovementCommand {
 	horizontal?: "left" | "right",
 }
 
+interface PlayerStats extends CharacterStats {
+	experience: number;
+}
+
 class Player extends Character {
 	name: string;
-	experience: number;
+	stats: PlayerStats;
 	constructor() {
 		super();
-		this.experience = 0;
+		this.stats = {
+			level: 1,
+			health: {
+				current: 100,
+				max: 100,
+			},
+			speed: {
+				current: 100,
+				base: 100,
+			},
+			actionPoints: 100,
+			experience: 0,
+		};
 		this.name = "Player";
+	}
+	get experience(): number {
+		return this.stats.experience;
+	}
+	set experience(num: number) {
+		this.stats.experience = num;
 	}
 
 	/**
@@ -83,7 +105,6 @@ class Player extends Character {
 	}
 
 	endTurn(): void {
-		this.restoreAP();
 		this.emitEvent(GameEvent.endTurnEvent());
 	}
 }

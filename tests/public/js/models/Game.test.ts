@@ -107,17 +107,12 @@ describe("Game Class", () => {
 			});
 
 			it("it should call itself enough times for the player to regain their AP if the player has <= 0 AP at the start of their turn", () => {
-				/**
-				 * Call counts are 1 higher than in practice, as the Player's endTurn() method will automatically
-				 * increase AP by its speed stat once.
-				 */
-
 				// Default character speed of 100.
 				game.player = new Player();
 				game.player.actionPoints = -200;
 				game.takeTurn();
 
-				expect(spy.callCount).to.equal(4);
+				expect(spy.callCount).to.equal(3);
 				spy.resetHistory();
 
 				// Character speed at 50.
@@ -125,7 +120,7 @@ describe("Game Class", () => {
 				game.player.actionPoints = -200;
 				game.takeTurn();
 
-				expect(spy.callCount).to.equal(6);
+				expect(spy.callCount).to.equal(5);
 			});
 
 			it("it should call the player's restoreAP() method if their AP is <= 0 at the start of the turn", () => {
