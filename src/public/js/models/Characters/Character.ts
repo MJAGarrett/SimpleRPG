@@ -87,6 +87,13 @@ abstract class Character {
 	get level(): number {
 		return this.stats.level;
 	}
+	private set level(level: number) {
+		this.stats.level = level;
+	}
+
+	levelUp() {
+		this.level++;
+	}
 	
 	reduceHealth(damage: number): void {
 		this.health -= damage;

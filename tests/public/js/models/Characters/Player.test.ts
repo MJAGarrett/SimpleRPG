@@ -142,6 +142,14 @@ describe("Player Class", () => {
 				expect(player.inventory).to.include(oldSword);
 			});
 
+			it("it should call UIChange()", () => {
+				const UIStub = Sinon.stub(player, "UIChange");
+				player.equipItem(new Helmet());
+				UIStub.restore();
+
+				expect(UIStub.calledOnce).to.be.true;
+			});
+
 		});
 
 		describe("handleInput()", () => {
@@ -230,6 +238,48 @@ describe("Player Class", () => {
 				expect(evt instanceof GameEvent).to.be.true;
 				expect(evt.type === "TURN_OVER").to.be.true;
 			});
+		});
+
+		describe("UIChange()", () => {
+
+			it("it should call emitEvent() with an instance of PlayerUIChangeEvent", () => {
+				const emitStub = Sinon.stub(player, "emitEvent");
+				const example = GameEvent.playerUIChange();
+				
+				player.UIChange();
+				emitStub.restore();
+
+				expect(emitStub.calledOnceWith(Sinon.match.has("type", example.type)));
+			});
+		});
+	});
+
+	describe("Player Setters", () => {
+
+		let UIStub: Sinon.SinonStub;
+		const player: Player = new Player();
+		let callCount = 0;
+
+		before(() => {
+			UIStub = Sinon.stub(player, "UIChange");
+		});
+		
+		after(() => {
+			UIStub.restore();
+		});
+
+		it("all setters with corresponding UI components should call UIChange()", () => {
+			player.health = 5;
+			callCount++;
+			player.actionPoints = 5;
+			callCount++;
+			player.speed = 20;
+			callCount++;
+			player.levelUp();
+			callCount++;
+
+			expect(UIStub.callCount).to.equal(callCount);
+			
 		});
 	});
 

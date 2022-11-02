@@ -3,12 +3,13 @@ import Tile from "../models/Game Map/Tile/Tile.js";
 import Zone from "../models/Game Map/Zone/Zone.js";
 import { MovementCommand } from "../models/Characters/Player.js";
 import { GameEvent } from "../models/Events/GameEvent.js";
-import Controller from "./Controller.js";
+import ComponentController from "./ComponentController.js";
 import MessageLogController from "./ComponentControllers/MessageLogController.js";
+import PlayerInfoController from "./ComponentControllers/PlayerInfoController.js";
 
 class GameController {
 	gameModel: Game;
-	components: Controller[];
+	components: ComponentController[];
 	gameArea: HTMLElement | null;
 	constructor(game: Game) {
 		this.components = [];
@@ -117,7 +118,17 @@ class GameController {
 	}
 
 	private initializeComponents(): void {
-		this.components.push(new MessageLogController());
+		const playerUI = new PlayerInfoController(this.gameModel.player);
+		playerUI.updateComponent();
+
+		const messages = new MessageLogController();
+		messages.updateComponent(GameEvent.messageEvent({
+			message: "Welcome to the Game!",
+			color: "white",
+		}));
+
+		this.components.push(messages, playerUI);
+
 	}
 }
 

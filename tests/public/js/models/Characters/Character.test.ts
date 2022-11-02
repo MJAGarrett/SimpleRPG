@@ -54,15 +54,19 @@ describe("Character Abstract Class", () => {
 			it("it should call the character's emitEvent() method with a deathMessage when the character's health falls to 0 or below", () => {
 				tempZone.placeCharacter(player, {row: 0, column: 0});
 
+				// Stubbed to prevent calling emit event twice via a UIUpdate event.
+				const UIStub = Sinon.stub(player as Player, "UIChange");
+
 				const dmgToKill = player.health * 2;
 				const stub = Sinon.stub(player, "emitEvent");
 				const expectedMessage = JSON.stringify(GameEvent.messageEvent({
 					color: "red",
 					message: player.generateDeathMessage(),
 				}));
-
+				
 				player.reduceHealth(dmgToKill);
-
+				UIStub.restore();
+				
 				expect(stub.calledOnce).to.be.true;
 				const [recievedMessage] = stub.args[0];
 				const actualMessage = JSON.stringify(recievedMessage);
@@ -363,6 +367,16 @@ describe("Character Abstract Class", () => {
 					player.increaseHealth(increase);
 				}
 				expect(player.health).to.equal(player.stats.health.max);
+			});
+		});
+
+		describe("levelUp()", () => {
+
+			it("it should increase a character's level by one", () => {
+				const prevLevel = player.level;
+				player.levelUp();
+
+				expect(player.level).to.equal(prevLevel + 1);
 			});
 		});
 	});

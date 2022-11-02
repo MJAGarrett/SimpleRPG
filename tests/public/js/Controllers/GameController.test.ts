@@ -10,6 +10,7 @@ import Tile from "../../../../src/public/js/models/Game Map/Tile/Tile.js";
 import Swordsman from "../../../../src/public/js/models/Characters/NPCs/Swordsman.js";
 import Sword from "../../../../src/public/js/models/Items/Weapons/Sword.js";
 import { Helmet } from "../../../../src/public/js/models/Items/Armor and Clothing/Armor.js";
+import { setupPlayerInfoDiv } from "./helpers.js";
 
 describe("GameController Class", () => {
 	let controller: GameController;
@@ -19,6 +20,10 @@ describe("GameController Class", () => {
 		setupDOM();
 		game = new Game();
 		controller = new GameController(game);
+	});
+
+	after(() => {
+		document.body.replaceChildren();
 	});
 
 	describe("Initialization", () => {
@@ -195,6 +200,9 @@ function setupDOM() {
 	const gameArea = document.createElement("div");
 	gameArea.classList.add("game-area");
 	document.body.appendChild(gameArea);
+
+	const playerInfo = setupPlayerInfoDiv();
+	document.body.appendChild(playerInfo); 
 
 	const messageContainer = document.createElement("div");
 	messageContainer.classList.add("message-container");

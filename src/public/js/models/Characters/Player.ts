@@ -34,6 +34,34 @@ class Player extends Character {
 		};
 		this.name = "Player";
 	}
+	get health(): number {
+		return this.stats.health.current;
+	}
+	get actionPoints(): number {
+		return this.stats.actionPoints;
+	}
+	get speed(): number {
+		return this.stats.speed.current;
+	}
+	get level(): number {
+		return this.stats.level;
+	}
+	set health(num: number) {
+		this.stats.health.current = num;
+		this.UIChange();
+	}
+	set actionPoints(num: number) {
+		this.stats.actionPoints = num;
+		this.UIChange();
+	}
+	set speed(num: number) {
+		this.stats.speed.current = num;
+		this.UIChange();
+	}
+	private set level(level: number) {
+		this.stats.level = level;
+		this.UIChange();
+	}
 	get experience(): number {
 		return this.stats.experience;
 	}
@@ -57,6 +85,8 @@ class Player extends Character {
 		if (!this.checkIfEquipSlotEmpty(item.equipSlot))
 			this.inventory.push(this.equipment[item.equipSlot] as InventoryItem);
 		this.equipment[item.equipSlot] = item;
+
+		this.UIChange();
 	}
 
 	checkIfEquipSlotEmpty(slot: EquipSlot): boolean {
@@ -102,6 +132,10 @@ class Player extends Character {
 
 	generateDeathMessage(): string {
 		return "You have died.";
+	}
+
+	UIChange() {
+		this.emitEvent(GameEvent.playerUIChange());
 	}
 
 	endTurn(): void {

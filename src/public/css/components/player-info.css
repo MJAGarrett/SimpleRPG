@@ -1,0 +1,24 @@
+.player-info {
+  color: white;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: .5em;
+}
+
+.player-info * {
+  margin: .25em 0;
+}
+
+.player-info .name {
+  grid-column: span 2;
+  font-size: 1.25rem;
+}
+
+.player-info li {
+  list-style: circle;
+  margin: 0 1.5em;
+}
+
+.player-info .armor {
+  grid-column: span 2;
+}

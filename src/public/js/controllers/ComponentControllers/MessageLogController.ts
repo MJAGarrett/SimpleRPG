@@ -1,5 +1,5 @@
 import { GameEventTypes, MessageEvent } from "../../models/Events/GameEvent.js";
-import ComponentController from "../Controller.js";
+import ComponentController from "../ComponentController.js";
 
 class MessageLogController implements ComponentController {
 	handleType: GameEventTypes;

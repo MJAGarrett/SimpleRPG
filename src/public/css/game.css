@@ -1,3 +1,5 @@
+@import url("./components/player-info.css");
+
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
