@@ -2,7 +2,7 @@ import Character from "../Characters/Character.js";
 
 abstract class GameEvent {
 	abstract type: GameEventTypes;
-	abstract details: object;
+	abstract details?: object;
 	static messageEvent(details: MessageDetails): MessageEvent {
 		return new MessageEvent(details);
 	}
@@ -21,9 +21,12 @@ abstract class GameEvent {
 	static moveEvent(details: object): MoveEvent {
 		return new MoveEvent(details);
 	}
+	static playerUIChange(): PlayerUIChangeEvent {
+		return new PlayerUIChangeEvent();
+	}
 }
 
-type GameEventTypes = "MESSAGE" | "MOVE" | "TURN_OVER";
+type GameEventTypes = "MESSAGE" | "MOVE" | "TURN_OVER" | "PLAYER_UI_CHANGE";
 
 interface MessageDetails {
 	color: string,
@@ -57,6 +60,15 @@ class TurnOverEvent extends GameEvent {
 		super();
 		this.type = "TURN_OVER";
 		this.details = {};
+	}
+}
+
+class PlayerUIChangeEvent extends GameEvent {
+	type: GameEventTypes;
+	details?: object;
+	constructor() {
+		super();
+		this.type = "PLAYER_UI_CHANGE";
 	}
 }
 

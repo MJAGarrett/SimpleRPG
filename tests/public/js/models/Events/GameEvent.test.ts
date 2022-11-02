@@ -59,6 +59,13 @@ describe("GameEvent Abstract Class", () => {
 			});
 		});
 
+		describe("playerUIChange()", () => {
+			it("it should return an instance of a PlayerUIChangeEvent class", () => {
+				const event = GameEvent.playerUIChange();
+
+				expect(event.type === "PLAYER_UI_CHANGE").to.be.true;
+			});
+		});
 	});
 });
 
