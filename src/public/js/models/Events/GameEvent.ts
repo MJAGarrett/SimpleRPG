@@ -24,9 +24,12 @@ abstract class GameEvent {
 	static playerUIChange(): PlayerUIChangeEvent {
 		return new PlayerUIChangeEvent();
 	}
+	static inventoryEvent(): InventoryEvent {
+		return new InventoryEvent();
+	}
 }
 
-type GameEventTypes = "MESSAGE" | "MOVE" | "TURN_OVER" | "PLAYER_UI_CHANGE";
+type GameEventTypes = "MESSAGE" | "MOVE" | "TURN_OVER" | "PLAYER_UI_CHANGE" | "INVENTORY_EVENT";
 
 interface MessageDetails {
 	color: string,
@@ -69,6 +72,15 @@ class PlayerUIChangeEvent extends GameEvent {
 	constructor() {
 		super();
 		this.type = "PLAYER_UI_CHANGE";
+	}
+}
+
+class InventoryEvent extends GameEvent {
+	type: GameEventTypes;
+	details?: object;
+	constructor() {
+		super();
+		this.type = "INVENTORY_EVENT";
 	}
 }
 

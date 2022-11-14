@@ -66,6 +66,14 @@ describe("GameEvent Abstract Class", () => {
 				expect(event.type === "PLAYER_UI_CHANGE").to.be.true;
 			});
 		});
+
+		describe("inventoryEvent()", () => {
+			it("it should return an instance of the InventoryEvent class", () => {
+				const event = GameEvent.inventoryEvent();
+
+				expect(event.type === "INVENTORY_EVENT").to.be.true;
+			});
+		});
 	});
 });
 
