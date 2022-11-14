@@ -77,6 +77,15 @@ class Player extends Character {
 		this.inventory.push(item);
 	}
 
+	removeItem(item: InventoryItem): void {
+		if (this.inventory.includes(item)) {
+			this.inventory = this.inventory.filter(invItem => invItem === item ? false : true);
+		}
+		else {
+			throw new Error("Item not in inventory");
+		}
+	}
+
 	getInventory(): InventoryItem[] {
 		return this.inventory;
 	}
@@ -85,8 +94,30 @@ class Player extends Character {
 		if (!this.checkIfEquipSlotEmpty(item.equipSlot))
 			this.inventory.push(this.equipment[item.equipSlot] as InventoryItem);
 		this.equipment[item.equipSlot] = item;
+		if (this.inventory.includes(item)) {
+			this.removeItem(item);
+		}
 
 		this.UIChange();
+	}
+
+	/**
+	 * Removes an item from the character's given equipment slot and returns the item to either
+	 * be dropped or placed back into the character's inventory.
+	 * 
+	 * @param slot A key of CharacterEquipment representing the slot a piece of equipment will take
+	 * @returns The item that was occupying the slot given.
+	 */
+	unequipItem(slot: EquipSlot): Equipable {
+		const temp = this.equipment[slot];
+
+		if (!temp) throw new Error(`No item in slot "${slot}"`);
+
+		else {
+			this.equipment[slot] = null;
+			this.UIChange();
+			return temp;
+		}
 	}
 
 	checkIfEquipSlotEmpty(slot: EquipSlot): boolean {

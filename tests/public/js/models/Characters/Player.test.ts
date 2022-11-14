@@ -74,6 +74,23 @@ describe("Player Class", () => {
 				expect(player.inventory[0]).to.be.equal(newSword);
 			});
 		});
+
+		describe("removeItem()", () => {
+
+			it("it should remove an item from a player's inventory", () => {
+				const sword = new Sword();
+				player.inventory = [sword];
+
+				player.removeItem(sword);
+
+				expect(player.inventory.includes(sword)).to.be.false;
+			});
+
+			it("it should throw an error if the item is not in the player's inventory", () => {
+				const sword = new Sword();
+				expect(() => player.removeItem(sword)).to.throw;
+			});
+		});
 	
 		describe("getInventory()", () => {
 			it("It should return an array of all items in the player's inventory", () => {
@@ -142,12 +159,58 @@ describe("Player Class", () => {
 				expect(player.inventory).to.include(oldSword);
 			});
 
+			it("it should remove the equipped item from the character's inventory if it is in their inventory", () => {
+				const sword = new Sword();
+				player.inventory.push(sword);
+
+				player.equipItem(sword);
+
+				expect(player.inventory.length).to.equal(0);
+			});
+
 			it("it should call UIChange()", () => {
 				const UIStub = Sinon.stub(player, "UIChange");
 				player.equipItem(new Helmet());
 				UIStub.restore();
 
 				expect(UIStub.calledOnce).to.be.true;
+			});
+
+		});
+
+		describe("unequipItem()", () => {
+			let stub: Sinon.SinonStub;
+			let helmet: Helmet;
+
+			beforeEach(() => {
+				stub = Sinon.stub(player, "UIChange");
+				helmet = new Helmet();
+				player.equipment.headwear = helmet;
+			});
+			after(() => {
+				stub.restore();
+			});
+
+			it("it should unequip an item from a character's equipment slot", () => {
+				player.unequipItem("headwear");
+
+				expect(player.equipment.headwear).to.be.null;
+			});
+
+			it("it should return the object in a character's equipment slot", () => {
+				const returned = player.unequipItem("headwear");
+
+				expect(returned).to.equal(helmet);
+			});
+
+			it("it should call UIChange", () => {
+				player.unequipItem("headwear");
+
+				expect(stub.calledOnce).to.be.true;
+			});
+
+			it("it should throw if there is no item in the character's equipment slot", () => {
+				expect(() => player.unequipItem("footwear")).to.throw;
 			});
 
 		});
