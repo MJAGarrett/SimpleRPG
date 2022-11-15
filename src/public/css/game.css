@@ -1,4 +1,5 @@
 @import url("./components/player-info.css");
+@import url("./components/inventory.css");
 
 *, *::before, *::after {
   box-sizing: border-box;

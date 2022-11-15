@@ -6,6 +6,7 @@ import { GameEvent } from "../models/Events/GameEvent.js";
 import ComponentController from "./ComponentController.js";
 import MessageLogController from "./ComponentControllers/MessageLogController.js";
 import PlayerInfoController from "./ComponentControllers/PlayerInfoController.js";
+import InventoryController from "./ComponentControllers/InventoryController.js";
 
 class GameController {
 	gameModel: Game;
@@ -66,6 +67,12 @@ class GameController {
 
 	private initializeEventHandlers() {
 		this.setUpPlayerMovementHandler();
+		window.addEventListener("keypress", (e) => {
+			if (e.code === "KeyI") {
+				e.preventDefault();
+				this.handleGameEvents(GameEvent.inventoryEvent());
+			}
+		});
 	}
 
 	private setUpPlayerMovementHandler() {
@@ -127,7 +134,9 @@ class GameController {
 			color: "white",
 		}));
 
-		this.components.push(messages, playerUI);
+		const inventory = new InventoryController(this.gameModel.player);
+
+		this.components.push(messages, playerUI, inventory);
 
 	}
 }
