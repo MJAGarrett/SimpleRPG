@@ -77,7 +77,7 @@ class InventoryController implements ComponentController {
 			});
 
 			const nameTD = document.createElement("td");
-			nameTD.textContent = item.type.charAt(0).toUpperCase() + item.type.slice(1);
+			nameTD.textContent = item.getFullname();
 			itemTile.appendChild(nameTD);
 
 			const weightTD = document.createElement("td");
