@@ -12,6 +12,9 @@ abstract class Potion implements Consumable {
 	consume(): StatusEffect {
 		return this.effect;
 	}
+	getFullname(): string {
+		return this.name;
+	}
 }
 
 export default Potion;

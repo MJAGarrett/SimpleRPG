@@ -16,7 +16,8 @@ type ItemQuality = {
 interface InventoryItem {
 	weight: number,
 	type: string,
-	quality: ItemQuality
+	quality: ItemQuality,
+	getFullname(): string,
 }
 
 export { Equipable, ArmorSlot, EquipSlot, WeaponSlot, InventoryItem, ItemQuality };

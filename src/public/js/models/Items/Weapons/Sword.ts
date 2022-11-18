@@ -10,9 +10,6 @@ class Sword extends Weapon {
 		this.weight = 10 * quality.effectivenessMult;
 		this.type = "Sword";
 	}
-	getFullname(): string {
-		return this.quality.prefix + " " + this.type;
-	}
 }
 
 export default Sword;

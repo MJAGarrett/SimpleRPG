@@ -12,6 +12,9 @@ abstract class Armor implements Equipable {
 		this.armorValue = protection;
 		this.color = color;
 	}
+	getFullname(): string {
+		return this.quality.prefix + " " + this.type;
+	}
 }
 
 /**

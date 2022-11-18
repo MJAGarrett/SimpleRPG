@@ -19,7 +19,9 @@ abstract class Weapon implements Equipable {
 	setDamage(newDamage: number): void {
 		this.damage = newDamage;
 	}
-	abstract getFullname(): string;
+	getFullname(): string {
+		return this.quality.prefix + " " + this.type;
+	}
 }
 
 type WeaponBasics = {
