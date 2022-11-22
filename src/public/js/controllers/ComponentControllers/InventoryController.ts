@@ -11,20 +11,20 @@ import ComponentController from "../ComponentController";
 class InventoryController implements ComponentController {
 	componentToUpdate: HTMLElement;
 	invItems: HTMLTableElement;
-	equippedItems: HTMLElement;
+	equippedItems: HTMLTableElement;
 	inventoryMap: Map<HTMLTableRowElement, InventoryItem>;
-	equippedMap: Map<HTMLElement, Equipable>;
+	equippedMap: Map<HTMLTableRowElement, Equipable>;
 	handleType: GameEventTypes;
 	player: Player;
 	visible: boolean;
 	constructor(player: Player) {
 		this.player = player;
 		this.inventoryMap = new Map<HTMLTableRowElement, InventoryItem>();
-		this.equippedMap = new Map<HTMLElement, Equipable>();
+		this.equippedMap = new Map<HTMLTableRowElement, Equipable>();
 		this.visible = false;
 		this.componentToUpdate = this.initializeComponent();
 		this.invItems = this.componentToUpdate.querySelector(".inv-item-list tbody") as HTMLTableElement;
-		this.equippedItems = this.componentToUpdate.querySelector(".inv-equipped") as HTMLElement;
+		this.equippedItems = this.componentToUpdate.querySelector(".inv-equipped-item-list") as HTMLTableElement;
 		this.handleType = "INVENTORY_EVENT";
 	}
 	/**
@@ -88,22 +88,37 @@ class InventoryController implements ComponentController {
 		}
 	}
 
+	/**
+	 * Updates the member variable "equippedMap" which stores DOM elements as keys and references
+	 * to the player's currently equipped items as values.
+	 */
 	updateEquippedMap(): void {
 		const equippedItems = this.player.equipment;
 		this.equippedMap.clear();
 
 		for (const [slot, item] of Object.entries(equippedItems)) {
-			if (!item) continue;
-			const equippedTile = document.createElement("div");
-			equippedTile.classList.add("item-equipped");
-			equippedTile.addEventListener("click",(e) => {
-				e.preventDefault();
-				this.player.unequipItem(slot as keyof CharacterEquipment);
-				this.player.addItem(item);
-				this.updateInfo();
-			});
-			equippedTile.textContent = item.type.charAt(0).toUpperCase();
-			this.equippedMap.set(equippedTile, item);
+			const itemRow = document.createElement("tr");
+			const itemSlot = document.createElement("td");
+			const itemName = document.createElement("td");
+
+			itemSlot.textContent = slot.charAt(0).toUpperCase() + slot.slice(1) + ":";
+
+			if (!item) {
+				slot === "weapon" ? itemName.textContent = "Unarmed" : itemName.textContent = "None";
+			} 
+			else {
+				itemName.textContent = item.getFullname();
+				itemRow.addEventListener("click",(e) => {
+					e.preventDefault();
+					this.player.unequipItem(slot as keyof CharacterEquipment);
+					this.player.addItem(item);
+					this.updateInfo();
+				});	
+			}
+
+			itemRow.append(itemSlot, itemName);
+
+			this.equippedMap.set(itemRow, item);
 		}
 	}
 
@@ -113,6 +128,7 @@ class InventoryController implements ComponentController {
 
 		const equippedArea = document.createElement("div");
 		equippedArea.classList.add("inv-equipped");
+		equippedArea.appendChild(initializeEquipmentDisplay());
 		component.appendChild(equippedArea);
 
 		const statsArea = document.createElement("div");
@@ -149,6 +165,30 @@ function initializeTable(): HTMLTableElement {
 	invTable.append(head, document.createElement("tbody"));
 
 	return invTable;
+}
+
+function initializeEquipmentDisplay(): HTMLTableElement {
+	const table = document.createElement("table");
+	table.classList.add("inv-equipped-table");
+
+	const head = document.createElement("thead");
+	const headRow = document.createElement("tr");
+
+	const slotTH = document.createElement("th");
+	slotTH.textContent = "Type";
+
+	const itemNameTH = document.createElement("th");
+	itemNameTH.textContent = "Item Name";
+
+	headRow.append(slotTH, itemNameTH);
+	head.appendChild(headRow);
+
+	const body = document.createElement("tbody");
+	body.classList.add("inv-equipped-item-list");
+
+	table.append(head, body);
+
+	return table;
 }
 
 function isEquipable(item: InventoryItem): item is Equipable {

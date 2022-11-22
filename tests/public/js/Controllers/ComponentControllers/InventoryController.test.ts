@@ -4,8 +4,9 @@ import InventoryController from "../../../../../src/public/js/controllers/Compon
 import Player from "../../../../../src/public/js/models/Characters/Player.js";
 import Sinon from "sinon";
 import Sword from "../../../../../src/public/js/models/Items/Weapons/Sword.js";
-import { InventoryItem } from "../../../../../src/public/js/models/Items/Interfaces.js";
-import { Breastplate } from "../../../../../src/public/js/models/Items/Armor and Clothing/Armor.js";
+import { Equipable, InventoryItem } from "../../../../../src/public/js/models/Items/Interfaces.js";
+import { Breastplate, Helmet } from "../../../../../src/public/js/models/Items/Armor and Clothing/Armor.js";
+import { CharacterEquipment } from "../../../../../src/public/js/models/Characters/Character.js";
 
 describe("InventoryController class", () => {
 	let player: Player = new Player();
@@ -106,8 +107,23 @@ describe("InventoryController class", () => {
 			expect(controller.invItems.childElementCount).to.eq(10);
 		});
 
-		// Pending UI rework for equipped items.
-		it("it should handle logic for equipped items UI");
+		it("it should add a row to the equippedItem table for each entry in equippedMap", () => {
+			setEquippedMap(player.equipment, controller.equippedMap);
+			const equipmentSize = Object.keys(player.equipment).length;
+
+			controller.updateInfo();
+
+			expect(controller.equippedItems.childElementCount).to.equal(equipmentSize);
+
+			const item = new Breastplate();
+			player.equipment.shirt = item;
+			setEquippedMap(player.equipment, controller.equippedMap);
+
+			controller.updateInfo();
+
+			expect(controller.equippedItems.childElementCount).to.equal(equipmentSize);
+			expect(itemTextInANode(controller.equippedItems.children, item)).to.be.true;
+		});
 	});
 
 	describe("updateInventoryMap()", () => {
@@ -155,12 +171,54 @@ describe("InventoryController class", () => {
 		});
 	});
 
-	// Pending rework of equipped item UI section.
 	describe("updateEquippedMap()", () => {
 
-		it("it should clear the current equippedItemsMap");
+		it("it should clear the current equippedItemsMap", () => {
+			let slot: keyof typeof player.equipment;
+			for (slot in player.equipment) {
+				player.equipment[slot] = null;
+			}
+			const helmet = new Helmet();
 
-		it("it should set entries on the equippedItemsMap for each item in the player's equipment");
+			player.equipment.headwear = helmet;
+
+			controller.updateEquippedMap();
+
+			expect(checkForItem(controller.equippedMap.values())).to.be.true;
+			expect(controller.equippedMap.size).to.be.equal(Object.keys(player.equipment).length);
+
+			player.equipment.headwear = null;
+
+			controller.updateEquippedMap();
+
+			expect(checkForItem(controller.equippedMap.values())).to.be.false;
+			expect(controller.equippedMap.size).to.be.equal(Object.keys(player.equipment).length);
+		});
+
+		it("it should set entries on the equippedItemsMap for each item in the player's equipment", () => {
+			let slot: keyof typeof player.equipment;
+			let numberOfEquipSlots = 0;
+
+			for (slot in player.equipment) {
+				numberOfEquipSlots++;
+				player.equipment[slot] = null;
+			}
+
+			const helmet = new Helmet();
+			const sword = new Sword();
+			const breastPlate = new Breastplate();
+			const items = [helmet, sword, breastPlate];
+
+			for (const item of items) {
+				player.equipment[item.equipSlot] = item;
+			}
+
+			controller.updateEquippedMap();
+			const values = Array.from(controller.equippedMap.values());
+
+			expect(checkForSeveralItems(values, ...items)).to.be.true;
+			expect(countNullEquipment(values)).to.equal(numberOfEquipSlots - items.length);
+		});
 	});
 });
 
@@ -177,4 +235,80 @@ function createInventoryRow(item: InventoryItem): HTMLTableRowElement {
 	row.appendChild(weightTD);
 
 	return row;
+}
+
+function setEquippedMap(items: CharacterEquipment, mapToSet: Map<HTMLTableRowElement, Equipable>): void {
+	mapToSet.clear();
+
+	for (const [slot, item] of Object.entries(items)) {
+		const row = document.createElement("tr");
+
+		const slotTD = document.createElement("td");
+		slotTD.textContent = slot.charAt(0).toUpperCase() + slot.slice(1);
+		row.appendChild(slotTD);
+
+		const nameTD = document.createElement("td");
+
+		if (!item) slot === "weapon" ? nameTD.textContent = "Unarmed" : nameTD.textContent = "None";
+		else nameTD.textContent = item.getFullname();
+		
+		row.appendChild(nameTD);
+
+		mapToSet.set(row, item);
+	}
+}
+
+/**
+ * Checks if any of the values in an equippedMap have items.
+ * @param iterator An iterator of EquippedMap.values();
+ * @returns 
+ */
+function checkForItem(iterator: IterableIterator<Equipable>): boolean {
+	for (const value of iterator) {
+		if (value !== null) return true;
+	}
+	return false;
+}
+
+/**
+ * Iterates through an equippedMap values iterator and returns true if all of the items specified 
+ * are included.
+ * @param iterator 
+ * @param items
+ * @returns 
+ */
+function checkForSeveralItems(values: Array<Equipable>, ...items: Array<Equipable>): boolean {
+
+	for (const item of items) {
+		if (!values.some(val => val === item)) return false;
+	}
+	
+	return true;
+}
+
+/**
+ * Iterates through an equippedMap and counts the number of null item references. Returns count.
+ * @param iterator 
+ * @returns Number of null item references.
+ */
+function countNullEquipment(values: Array<Equipable>): number {
+	let count: number = 0;
+
+	for (const val of values) {
+		console.log(val);
+		
+		if (val === null) count += 1;
+	}
+	return count;
+}
+
+function itemTextInANode(children: HTMLCollection, item: Equipable): boolean {
+	const rows = Array.from(children);
+
+	for (const row of rows) {
+		const childTDs = Array.from(row.children);
+		if (childTDs.some(node => node.textContent === item.getFullname())) return true;
+	}
+
+	return false;
 }

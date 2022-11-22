@@ -45,7 +45,7 @@
   box-sizing: border-box;
 }
 
-.inv-item-list {
+.inv table {
   --margin-width: .25em;
   width: 100%;
   max-height: 100%;
