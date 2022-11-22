@@ -128,15 +128,24 @@ class InventoryController implements ComponentController {
 
 		const equippedArea = document.createElement("div");
 		equippedArea.classList.add("inv-equipped");
+		const equippedHeader = document.createElement("h3");
+		equippedHeader.textContent = "Equipped Items";
+		equippedArea.appendChild(equippedHeader);
 		equippedArea.appendChild(initializeEquipmentDisplay());
 		component.appendChild(equippedArea);
 
 		const statsArea = document.createElement("div");
 		statsArea.classList.add("inv-stats");
+		const statsHeader = document.createElement("h3");
+		statsHeader.textContent = "Player Stats";
+		statsArea.appendChild(statsHeader);
 		component.appendChild(statsArea);
 
 		const inventoryArea = document.createElement("div");
 		inventoryArea.classList.add("inv-items");
+		const inventoryHeader = document.createElement("h3");
+		inventoryHeader.textContent = "Inventory";
+		inventoryArea.appendChild(inventoryHeader);
 		inventoryArea.appendChild(initializeTable());
 
 		component.appendChild(inventoryArea);

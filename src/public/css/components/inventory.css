@@ -15,6 +15,14 @@
   border: .25em solid black;
   gap: .25em;
   background-color: black;
+  color: white;
+}
+
+.inv h3 {
+  text-align: center;
+  font-size: 1.5em;
+  padding: .25em;
+  border-bottom: .1em white solid;
 }
 
 .inv-items {
@@ -29,8 +37,6 @@
 .inv-items::-webkit-scrollbar-thumb {
   background-color: gainsboro;
   border-radius: .5em;
-  /* box-shadow: inset .25em .25em .25em hsl(0deg 0% 100% / 25%), 
-    inset -.25em -.25em .25em rgb(0 0 0 / 25%); */
   background-clip: content-box;
   border: .25em solid transparent;
 }
@@ -56,7 +62,6 @@
 
 td, th {
   padding: .25em;
-  color: white;
   background-color: #232323;
   border-bottom: .1em solid white;
 }
@@ -80,7 +85,7 @@ td {
 
 .inv-equipped {
   grid-area: equipped;
-  background-color: bisque;
+  background-color: #232323;
 }
 
 .inv-stats {
