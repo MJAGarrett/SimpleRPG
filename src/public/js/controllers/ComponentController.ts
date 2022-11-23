@@ -1,4 +1,4 @@
-import { GameEventTypes } from "../models/Events/GameEvent.js";
+import { GameEventTypes } from "../models/Events/GameEvent";
 
 /**
  * ComponentControllers are responsible for DOM manipulations on UI components that are

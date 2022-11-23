@@ -1,5 +1,5 @@
-import Qualities from "../ItemQuality.js";
-import { Weapon } from "./Weapons.js";
+import Qualities from "../ItemQuality";
+import { Weapon } from "./Weapons";
 
 class Unarmed extends Weapon {
 	type: string;

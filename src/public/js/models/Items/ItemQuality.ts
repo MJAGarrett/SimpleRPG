@@ -1,4 +1,4 @@
-import { ItemQuality } from "./Interfaces.js";
+import { ItemQuality } from "./Interfaces";
 
 const standardQuality: ItemQuality = {
 	prefix: "Regular",

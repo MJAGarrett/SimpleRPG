@@ -1,7 +1,7 @@
-import Character from "../../Characters/Character.js";
-import Tile from "../Tile/Tile.js";
-import { GameEvent } from "../../Events/GameEvent.js";
-import Game from "../../Game.js";
+import Character from "../../Characters/Character";
+import Tile from "../Tile/Tile";
+import { GameEvent } from "../../Events/GameEvent";
+import Game from "../../Game";
 
 interface ZoneCoordinate {
 	row: number,

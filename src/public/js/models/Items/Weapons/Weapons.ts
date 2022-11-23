@@ -1,4 +1,4 @@
-import { Equipable, WeaponSlot, ItemQuality } from "../Interfaces.js";
+import { Equipable, WeaponSlot, ItemQuality } from "../Interfaces";
 
 abstract class Weapon implements Equipable {
 	abstract weight: number;

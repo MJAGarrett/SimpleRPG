@@ -1,5 +1,5 @@
-import Qualities from "../ItemQuality.js";
-import { ArmorSlot, Equipable, ItemQuality } from "../Interfaces.js";
+import Qualities from "../ItemQuality";
+import { ArmorSlot, Equipable, ItemQuality } from "../Interfaces";
 
 abstract class Armor implements Equipable {
 	abstract equipSlot: ArmorSlot;

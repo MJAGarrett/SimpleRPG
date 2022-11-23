@@ -1,7 +1,7 @@
-import { GameEvent } from "../Events/GameEvent.js";
-import { ZoneCoordinate } from "../Game Map/Zone/Zone.js";
-import { Equipable, InventoryItem } from "../Items/Interfaces.js";
-import Character, {CharacterEquipment, CharacterStats} from "./Character.js";
+import { GameEvent } from "../Events/GameEvent";
+import { ZoneCoordinate } from "../Game Map/Zone/Zone";
+import { Equipable, InventoryItem } from "../Items/Interfaces";
+import Character, {CharacterEquipment, CharacterStats} from "./Character";
 
 type EquipSlot = keyof CharacterEquipment;
 

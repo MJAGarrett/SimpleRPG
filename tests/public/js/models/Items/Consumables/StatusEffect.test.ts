@@ -1,8 +1,8 @@
 import { expect } from "chai";
 import Sinon from "sinon";
-import Character from "../../../../../../src/public/js/models/Characters/Character.js";
-import Swordsman from "../../../../../../src/public/js/models/Characters/NPCs/Swordsman.js";
-import { Heal } from "../../../../../../src/public/js/models/Items/Consumables/StatusEffect.js";
+import Character from "../../../../../../src/public/js/models/Characters/Character";
+import Swordsman from "../../../../../../src/public/js/models/Characters/NPCs/Swordsman";
+import { Heal } from "../../../../../../src/public/js/models/Items/Consumables/StatusEffect";
 
 describe("Heal Class", () => {
 	let effect: Heal;

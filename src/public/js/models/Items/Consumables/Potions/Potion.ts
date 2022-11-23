@@ -1,6 +1,6 @@
-import { ItemQuality } from "../../Interfaces.js";
-import Consumable from "../IConsumable.js";
-import StatusEffect from "../StatusEffect.js";
+import { ItemQuality } from "../../Interfaces";
+import Consumable from "../IConsumable";
+import StatusEffect from "../StatusEffect";
 
 abstract class Potion implements Consumable {
 	abstract name: string;

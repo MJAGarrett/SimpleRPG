@@ -1,7 +1,7 @@
-import "jsdom-global/register.js";
+import "jsdom-global/register";
 import { expect } from "chai";
-import MessageLogController from "../../../../../src/public/js/controllers/ComponentControllers/MessageLogController.js";
-import { GameEvent } from "../../../../../src/public/js/models/Events/GameEvent.js";
+import MessageLogController from "../../../../../src/public/js/controllers/ComponentControllers/MessageLogController";
+import { GameEvent } from "../../../../../src/public/js/models/Events/GameEvent";
 
 describe("GameController Class", () => {
 

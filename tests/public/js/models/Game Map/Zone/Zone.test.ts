@@ -1,10 +1,10 @@
 import {expect} from "chai";
 import Sinon from "sinon";
-import Player from "../../../../../../src/public/js/models/Characters/Player.js";
-import { GameEvent } from "../../../../../../src/public/js/models/Events/GameEvent.js";
-import Tile from "../../../../../../src/public/js/models/Game Map/Tile/Tile.js";
-import Zone, { ZoneCoordinate } from "../../../../../../src/public/js/models/Game Map/Zone/Zone.js";
-import Game from "../../../../../../src/public/js/models/Game.js";
+import Player from "../../../../../../src/public/js/models/Characters/Player";
+import { GameEvent } from "../../../../../../src/public/js/models/Events/GameEvent";
+import Tile from "../../../../../../src/public/js/models/Game Map/Tile/Tile";
+import Zone, { ZoneCoordinate } from "../../../../../../src/public/js/models/Game Map/Zone/Zone";
+import Game from "../../../../../../src/public/js/models/Game";
 
 describe("Zone", () => {
 	let zone: Zone;

@@ -1,12 +1,12 @@
-import "jsdom-global/register.js";
+import "jsdom-global/register";
 import { expect } from "chai";
-import InventoryController from "../../../../../src/public/js/controllers/ComponentControllers/InventoryController.js";
-import Player from "../../../../../src/public/js/models/Characters/Player.js";
+import InventoryController from "../../../../../src/public/js/controllers/ComponentControllers/InventoryController";
+import Player from "../../../../../src/public/js/models/Characters/Player";
 import Sinon from "sinon";
-import Sword from "../../../../../src/public/js/models/Items/Weapons/Sword.js";
-import { Equipable, InventoryItem } from "../../../../../src/public/js/models/Items/Interfaces.js";
-import { Breastplate, Helmet } from "../../../../../src/public/js/models/Items/Armor and Clothing/Armor.js";
-import { CharacterEquipment } from "../../../../../src/public/js/models/Characters/Character.js";
+import Sword from "../../../../../src/public/js/models/Items/Weapons/Sword";
+import { Equipable, InventoryItem } from "../../../../../src/public/js/models/Items/Interfaces";
+import { Breastplate, Helmet } from "../../../../../src/public/js/models/Items/Armor and Clothing/Armor";
+import { CharacterEquipment } from "../../../../../src/public/js/models/Characters/Character";
 
 describe("InventoryController class", () => {
 	let player: Player = new Player();

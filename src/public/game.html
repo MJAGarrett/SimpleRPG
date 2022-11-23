@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="./css/game.css">
   <title>Simple RPG</title>
-  <script src="./js/gameStart.js" type="module"></script>
 </head>
 <body>
   <div class="UI-area">
@@ -35,4 +34,11 @@
     </div>
   </div>
 </body>
+<!-- 
+  Script tag must go at the bottom to allow for DOM to fully load prior to JS manipulation.
+  Require() is necessary as electron does not support ESModules.
+-->
+<script>
+  require("./js/gameStart");
+</script>
 </html>

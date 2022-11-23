@@ -1,7 +1,7 @@
-import { CharacterEquipment } from "../../models/Characters/Character.js";
-import Player from "../../models/Characters/Player.js";
-import { GameEventTypes } from "../../models/Events/GameEvent.js";
-import ComponentController from "../ComponentController.js";
+import { CharacterEquipment } from "../../models/Characters/Character";
+import Player from "../../models/Characters/Player";
+import { GameEventTypes } from "../../models/Events/GameEvent";
+import ComponentController from "../ComponentController";
 
 const StatsToUpdate = [
 	"health", 

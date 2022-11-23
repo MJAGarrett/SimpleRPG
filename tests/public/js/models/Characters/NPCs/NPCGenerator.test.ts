@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import NPCGenerator from "../../../../../../src/public/js/models/Characters/NPCs/NPCGenerator.js";
-import Swordsman from "../../../../../../src/public/js/models/Characters/NPCs/Swordsman.js";
+import NPCGenerator from "../../../../../../src/public/js/models/Characters/NPCs/NPCGenerator";
+import Swordsman from "../../../../../../src/public/js/models/Characters/NPCs/Swordsman";
 
 describe("NPCGenerator Class", () => {
 

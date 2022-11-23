@@ -1,4 +1,4 @@
-import Character from "../Characters/Character.js";
+import Character from "../Characters/Character";
 
 abstract class GameEvent {
 	abstract type: GameEventTypes;

@@ -1,10 +1,10 @@
-import { Equipable, InventoryItem} from "../Items/Interfaces.js";
-import Zone, { ZoneCoordinate } from "../Game Map/Zone/Zone.js";
-import { Weapon } from "../Items/Weapons/Weapons.js";
-import { Armor } from "../Items/Armor and Clothing/Armor.js";
-import { GameEvent } from "../Events/GameEvent.js";
-import StatusEffect from "../Items/Consumables/StatusEffect.js";
-import Consumable from "../Items/Consumables/IConsumable.js";
+import { Equipable, InventoryItem} from "../Items/Interfaces";
+import Zone, { ZoneCoordinate } from "../Game Map/Zone/Zone";
+import { Weapon } from "../Items/Weapons/Weapons";
+import { Armor } from "../Items/Armor and Clothing/Armor";
+import { GameEvent } from "../Events/GameEvent";
+import StatusEffect from "../Items/Consumables/StatusEffect";
+import Consumable from "../Items/Consumables/IConsumable";
 
 interface CharacterEquipment {
 	weapon: Equipable | null,

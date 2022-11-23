@@ -1,7 +1,7 @@
-import { ItemQuality } from "../../Interfaces.js";
-import Qualities from "../../ItemQuality.js";
-import StatusEffect from "../StatusEffect.js";
-import Potion from "./Potion.js";
+import { ItemQuality } from "../../Interfaces";
+import Qualities from "../../ItemQuality";
+import StatusEffect from "../StatusEffect";
+import Potion from "./Potion";
 
 export default class HealthPotion extends Potion {
 	type: "potion" | "poison" = "potion";

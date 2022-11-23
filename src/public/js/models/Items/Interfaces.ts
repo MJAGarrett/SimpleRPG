@@ -1,4 +1,4 @@
-import { CharacterEquipment } from "../Characters/Character.js";
+import { CharacterEquipment } from "../Characters/Character";
 
 type EquipSlot = keyof CharacterEquipment;
 type ArmorSlot = Exclude<EquipSlot, "weapon">;

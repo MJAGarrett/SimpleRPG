@@ -1,4 +1,4 @@
-import Character from "../Character.js";
+import Character from "../Character";
 
 abstract class NPC extends Character {
 	abstract name: string;

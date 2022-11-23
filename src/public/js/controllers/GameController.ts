@@ -1,12 +1,12 @@
-import Game from "../models/Game.js";
-import Tile from "../models/Game Map/Tile/Tile.js";
-import Zone from "../models/Game Map/Zone/Zone.js";
-import { MovementCommand } from "../models/Characters/Player.js";
-import { GameEvent } from "../models/Events/GameEvent.js";
-import ComponentController from "./ComponentController.js";
-import MessageLogController from "./ComponentControllers/MessageLogController.js";
-import PlayerInfoController from "./ComponentControllers/PlayerInfoController.js";
-import InventoryController from "./ComponentControllers/InventoryController.js";
+import Game from "../models/Game";
+import Tile from "../models/Game Map/Tile/Tile";
+import Zone from "../models/Game Map/Zone/Zone";
+import { MovementCommand } from "../models/Characters/Player";
+import { GameEvent } from "../models/Events/GameEvent";
+import ComponentController from "./ComponentController";
+import MessageLogController from "./ComponentControllers/MessageLogController";
+import PlayerInfoController from "./ComponentControllers/PlayerInfoController";
+import InventoryController from "./ComponentControllers/InventoryController";
 
 class GameController {
 	gameModel: Game;

@@ -1,8 +1,8 @@
 import chai from "chai";
 import sinon from "sinon";
 
-import Sword from "../../../../../../src/public/js/models/Items/Weapons/Sword.js";
-import WeaponBuilder from "../../../../../../src/public/js/models/Items/Weapons/WeaponBuilder.js";
+import Sword from "../../../../../../src/public/js/models/Items/Weapons/Sword";
+import WeaponBuilder from "../../../../../../src/public/js/models/Items/Weapons/WeaponBuilder";
 
 const expect = chai.expect;
 

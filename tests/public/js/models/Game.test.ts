@@ -1,9 +1,9 @@
 import { expect } from "chai";
 import Sinon from "sinon";
-import Game from "../../../../src/public/js/models/Game.js";
-import GameController from "../../../../src/public/js/controllers/GameController.js";
-import { GameEvent } from "../../../../src/public/js/models/Events/GameEvent.js";
-import Player from "../../../../src/public/js/models/Characters/Player.js";
+import Game from "../../../../src/public/js/models/Game";
+import GameController from "../../../../src/public/js/controllers/GameController";
+import { GameEvent } from "../../../../src/public/js/models/Events/GameEvent";
+import Player from "../../../../src/public/js/models/Characters/Player";
 
 /**
  * Fake object created to allow for testing the controller outside of a browser environment.

@@ -1,16 +1,16 @@
-import "jsdom-global/register.js";
+import "jsdom-global/register";
 import { expect } from "chai";
 import Sinon from "sinon";
-import GameController from "../../../../src/public/js/controllers/GameController.js";
-import Game from "../../../../src/public/js/models/Game.js";
-import { GameEvent } from "../../../../src/public/js/models/Events/GameEvent.js";
-import MessageLogController from "../../../../src/public/js/controllers/ComponentControllers/MessageLogController.js";
-import Zone from "../../../../src/public/js/models/Game Map/Zone/Zone.js";
-import Tile from "../../../../src/public/js/models/Game Map/Tile/Tile.js";
-import Swordsman from "../../../../src/public/js/models/Characters/NPCs/Swordsman.js";
-import Sword from "../../../../src/public/js/models/Items/Weapons/Sword.js";
-import { Helmet } from "../../../../src/public/js/models/Items/Armor and Clothing/Armor.js";
-import { setupPlayerInfoDiv } from "./helpers.js";
+import GameController from "../../../../src/public/js/controllers/GameController";
+import Game from "../../../../src/public/js/models/Game";
+import { GameEvent } from "../../../../src/public/js/models/Events/GameEvent";
+import MessageLogController from "../../../../src/public/js/controllers/ComponentControllers/MessageLogController";
+import Zone from "../../../../src/public/js/models/Game Map/Zone/Zone";
+import Tile from "../../../../src/public/js/models/Game Map/Tile/Tile";
+import Swordsman from "../../../../src/public/js/models/Characters/NPCs/Swordsman";
+import Sword from "../../../../src/public/js/models/Items/Weapons/Sword";
+import { Helmet } from "../../../../src/public/js/models/Items/Armor and Clothing/Armor";
+import { setupPlayerInfoDiv } from "./helpers";
 
 describe("GameController Class", () => {
 	let controller: GameController;

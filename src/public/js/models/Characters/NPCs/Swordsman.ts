@@ -1,5 +1,5 @@
-import Sword from "../../Items/Weapons/Sword.js";
-import NPC from "./NPC.js";
+import Sword from "../../Items/Weapons/Sword";
+import NPC from "./NPC";
 
 class Swordsman extends NPC {
 	name: string;

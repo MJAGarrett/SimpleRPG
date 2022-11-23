@@ -1,4 +1,4 @@
-import Swordsman from "./Swordsman.js";
+import Swordsman from "./Swordsman";
 
 class NPCGenerator {
 	static swordsman(): Swordsman {

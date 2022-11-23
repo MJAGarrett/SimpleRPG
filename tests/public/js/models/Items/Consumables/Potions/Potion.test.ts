@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import HealthPotion from "../../../../../../../src/public/js/models/Items/Consumables/Potions/HealthPotion.js";
+import HealthPotion from "../../../../../../../src/public/js/models/Items/Consumables/Potions/HealthPotion";
 
 describe("Potion Abstract Class", () => {
 

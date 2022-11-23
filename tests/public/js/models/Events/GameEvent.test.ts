@@ -1,7 +1,7 @@
 import { expect } from "chai";
-import Swordsman from "../../../../../src/public/js/models/Characters/NPCs/Swordsman.js";
-import Player from "../../../../../src/public/js/models/Characters/Player.js";
-import { GameEvent } from "../../../../../src/public/js/models/Events/GameEvent.js";
+import Swordsman from "../../../../../src/public/js/models/Characters/NPCs/Swordsman";
+import Player from "../../../../../src/public/js/models/Characters/Player";
+import { GameEvent } from "../../../../../src/public/js/models/Events/GameEvent";
 
 describe("GameEvent Abstract Class", () => {
 

@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import NPCGenerator from "../../../../../../src/public/js/models/Characters/NPCs/NPCGenerator.js";
+import NPCGenerator from "../../../../../../src/public/js/models/Characters/NPCs/NPCGenerator";
 
 describe("NPC Abstract Class", () => {
 

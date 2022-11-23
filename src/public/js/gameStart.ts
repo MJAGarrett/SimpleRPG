@@ -1,5 +1,5 @@
-import Game from "./models/Game.js";
-import GameController from "./controllers/GameController.js";
+import Game from "./models/Game";
+import GameController from "./controllers/GameController";
 
 const game = new Game();
 const controller = new GameController(game);

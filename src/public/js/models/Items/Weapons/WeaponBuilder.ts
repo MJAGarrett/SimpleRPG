@@ -1,6 +1,6 @@
-import { ItemQuality } from "../Interfaces.js";
-import Qualities from "../ItemQuality.js";
-import { Weapon } from "./Weapons.js";
+import { ItemQuality } from "../Interfaces";
+import Qualities from "../ItemQuality";
+import { Weapon } from "./Weapons";
 
 type WeaponBasics = {
 	damage: number,

@@ -1,10 +1,10 @@
-import "jsdom-global/register.js";
+import "jsdom-global/register";
 import { expect } from "chai";
-import ComponentController from "../../../../../src/public/js/controllers/ComponentController.js";
-import PlayerInfoController from "../../../../../src/public/js/controllers/ComponentControllers/PlayerInfoController.js";
-import Player from "../../../../../src/public/js/models/Characters/Player.js";
-import { Breastplate } from "../../../../../src/public/js/models/Items/Armor and Clothing/Armor.js";
-import { setupPlayerInfoDiv } from "../helpers.js";
+import ComponentController from "../../../../../src/public/js/controllers/ComponentController";
+import PlayerInfoController from "../../../../../src/public/js/controllers/ComponentControllers/PlayerInfoController";
+import Player from "../../../../../src/public/js/models/Characters/Player";
+import { Breastplate } from "../../../../../src/public/js/models/Items/Armor and Clothing/Armor";
+import { setupPlayerInfoDiv } from "../helpers";
 
 describe("PlayerInfoController Class", () => {
 	let controller: ComponentController;

@@ -1,16 +1,16 @@
 import { expect } from "chai";
 import Sinon from "sinon";
-import Character from "../../../../../src/public/js/models/Characters/Character.js";
-import Swordsman from "../../../../../src/public/js/models/Characters/NPCs/Swordsman.js";
-import Player from "../../../../../src/public/js/models/Characters/Player.js";
-import { GameEvent } from "../../../../../src/public/js/models/Events/GameEvent.js";
-import Zone, { ZoneCoordinate } from "../../../../../src/public/js/models/Game Map/Zone/Zone.js";
-import Game from "../../../../../src/public/js/models/Game.js";
-import { Breastplate, Helmet } from "../../../../../src/public/js/models/Items/Armor and Clothing/Armor.js";
-import Consumable from "../../../../../src/public/js/models/Items/Consumables/IConsumable.js";
-import HealthPotion from "../../../../../src/public/js/models/Items/Consumables/Potions/HealthPotion.js";
-import StatusEffect, { Heal } from "../../../../../src/public/js/models/Items/Consumables/StatusEffect.js";
-import Sword from "../../../../../src/public/js/models/Items/Weapons/Sword.js";
+import Character from "../../../../../src/public/js/models/Characters/Character";
+import Swordsman from "../../../../../src/public/js/models/Characters/NPCs/Swordsman";
+import Player from "../../../../../src/public/js/models/Characters/Player";
+import { GameEvent } from "../../../../../src/public/js/models/Events/GameEvent";
+import Zone, { ZoneCoordinate } from "../../../../../src/public/js/models/Game Map/Zone/Zone";
+import Game from "../../../../../src/public/js/models/Game";
+import { Breastplate, Helmet } from "../../../../../src/public/js/models/Items/Armor and Clothing/Armor";
+import Consumable from "../../../../../src/public/js/models/Items/Consumables/IConsumable";
+import HealthPotion from "../../../../../src/public/js/models/Items/Consumables/Potions/HealthPotion";
+import StatusEffect, { Heal } from "../../../../../src/public/js/models/Items/Consumables/StatusEffect";
+import Sword from "../../../../../src/public/js/models/Items/Weapons/Sword";
 
 describe("Character Abstract Class", () => {
 

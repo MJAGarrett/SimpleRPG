@@ -1,5 +1,5 @@
-import Character from "../../Characters/Character.js";
-import { InventoryItem } from "../../Items/Interfaces.js";
+import Character from "../../Characters/Character";
+import { InventoryItem } from "../../Items/Interfaces";
 
 class Tile {
 	character: Character | null;

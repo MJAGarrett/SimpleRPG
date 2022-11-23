@@ -1,15 +1,15 @@
 import { expect } from "chai";
 
-import Player from "../../../../../src/public/js/models/Characters/Player.js";
-import Sword from "../../../../../src/public/js/models/Items/Weapons/Sword.js";
-import WeaponBuilder from "../../../../../src/public/js/models/Items/Weapons/WeaponBuilder.js";
-import {Helmet} from "../../../../../src/public/js/models/Items/Armor and Clothing/Armor.js";
+import Player from "../../../../../src/public/js/models/Characters/Player";
+import Sword from "../../../../../src/public/js/models/Items/Weapons/Sword";
+import WeaponBuilder from "../../../../../src/public/js/models/Items/Weapons/WeaponBuilder";
+import {Helmet} from "../../../../../src/public/js/models/Items/Armor and Clothing/Armor";
 import {EquipSlot} from "../../../../../src/public/js/models/Items/Interfaces";
-import Zone, { ZoneCoordinate } from "../../../../../src/public/js/models/Game Map/Zone/Zone.js";
+import Zone, { ZoneCoordinate } from "../../../../../src/public/js/models/Game Map/Zone/Zone";
 import Sinon from "sinon";
-import Swordsman from "../../../../../src/public/js/models/Characters/NPCs/Swordsman.js";
-import { GameEvent } from "../../../../../src/public/js/models/Events/GameEvent.js";
-import Game from "../../../../../src/public/js/models/Game.js";
+import Swordsman from "../../../../../src/public/js/models/Characters/NPCs/Swordsman";
+import { GameEvent } from "../../../../../src/public/js/models/Events/GameEvent";
+import Game from "../../../../../src/public/js/models/Game";
 
 // const should = chai.should();
 describe("Player Class", () => {
