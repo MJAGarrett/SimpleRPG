@@ -1,4 +1,5 @@
 .inv {
+  --panel-background-color: #232323;
   position: absolute;
   display: grid;
   grid-template-rows: 1fr 1.25fr;
@@ -27,7 +28,7 @@
 
 .inv-items {
   grid-area: items;
-  background-color: #232323;
+  background-color: var(--panel-background-color);
   overflow: auto;
 }
 .inv-items::-webkit-scrollbar {
@@ -62,7 +63,7 @@
 
 td, th {
   padding: .25em;
-  background-color: #232323;
+  background-color: var(--panel-background-color);
   border-bottom: .1em solid white;
 }
 
@@ -85,10 +86,10 @@ td {
 
 .inv-equipped {
   grid-area: equipped;
-  background-color: #232323;
+  background-color: var(--panel-background-color);
 }
 
 .inv-stats {
   grid-area: stats;
-  background-color: red;
+  background-color: var(--panel-background-color);
 }

@@ -14,6 +14,7 @@ class InventoryController implements ComponentController {
 	equippedItems: HTMLTableElement;
 	inventoryMap: Map<HTMLTableRowElement, InventoryItem>;
 	equippedMap: Map<HTMLTableRowElement, Equipable>;
+	statsSet: Set<HTMLTableCellElement>;
 	handleType: GameEventTypes;
 	player: Player;
 	visible: boolean;
@@ -21,6 +22,7 @@ class InventoryController implements ComponentController {
 		this.player = player;
 		this.inventoryMap = new Map<HTMLTableRowElement, InventoryItem>();
 		this.equippedMap = new Map<HTMLTableRowElement, Equipable>();
+		this.statsSet = new Set<HTMLTableCellElement>;
 		this.visible = false;
 		this.componentToUpdate = this.initializeComponent();
 		this.invItems = this.componentToUpdate.querySelector(".inv-item-list tbody") as HTMLTableElement;
@@ -61,6 +63,13 @@ class InventoryController implements ComponentController {
 		for (const [elem] of this.equippedMap) {
 			this.equippedItems.appendChild(elem);
 		}
+
+		for (const stat of this.statsSet) {
+			stat.dataset.offense === "true"
+				? stat.textContent = this.player.calcDamage().toString() 
+				: stat.textContent = this.player.calcDefense().toString();
+		}
+		
 	}
 
 	updateInventoryMap(): void {
@@ -138,7 +147,7 @@ class InventoryController implements ComponentController {
 		statsArea.classList.add("inv-stats");
 		const statsHeader = document.createElement("h3");
 		statsHeader.textContent = "Player Stats";
-		statsArea.appendChild(statsHeader);
+		statsArea.append(statsHeader, initializeStatsTable(this));
 		component.appendChild(statsArea);
 
 		const inventoryArea = document.createElement("div");
@@ -202,6 +211,58 @@ function initializeEquipmentDisplay(): HTMLTableElement {
 
 function isEquipable(item: InventoryItem): item is Equipable {
 	return "equipSlot" in item;
+}
+
+function initializeStatsTable(componentRef: InventoryController): HTMLTableElement {
+	const statsTable = document.createElement("table");
+	statsTable.classList.add("stats-table");
+
+	const colGroup = document.createElement("colgroup");
+	const offCol = document.createElement("col");
+	offCol.setAttribute("span", "2");
+	const defCol = document.createElement("col");
+	defCol.setAttribute("span", "2");
+	colGroup.append(offCol, defCol);
+	statsTable.appendChild(colGroup);
+
+	const tableHead = document.createElement("thead");
+	const headRow = document.createElement("tr");
+
+	const offenseHeader = document.createElement("th");
+	offenseHeader.textContent = "Offense";
+	offenseHeader.setAttribute("colspan", "2");
+	headRow.appendChild(offenseHeader);
+
+	const defenseHeader = document.createElement("th");
+	defenseHeader.textContent = "Defense";
+	defenseHeader.setAttribute("colspan", "2");
+	headRow.appendChild(defenseHeader);
+
+	tableHead.appendChild(headRow);
+	statsTable.appendChild(tableHead);
+
+	const body = document.createElement("tbody");
+
+	const rawDamLabel = document.createElement("td");
+	rawDamLabel.textContent = "Base Damage";
+
+	const rawDam = document.createElement("td");
+	rawDam.textContent = "0";
+	rawDam.dataset.offense = "true";
+	componentRef.statsSet.add(rawDam);
+
+	const rawDefLabel = document.createElement("td");
+	rawDefLabel.textContent = "Defense";
+
+	const rawDef = document.createElement("td");
+	rawDef.textContent = "0";
+	rawDef.dataset.defense = "true";
+	componentRef.statsSet.add(rawDef);
+
+	body.append(rawDamLabel, rawDam, rawDefLabel, rawDef);
+	statsTable.appendChild(body);
+
+	return statsTable;
 }
 
 export default InventoryController;
