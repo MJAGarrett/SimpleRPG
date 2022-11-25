@@ -80,7 +80,6 @@ class InventoryController implements ComponentController {
 			itemTile.classList.add("item");
 			itemTile.addEventListener("click", (e) => {
 				e.preventDefault();
-				this.player.removeItem(item);
 				isEquipable(item) ? this.player.equipItem(item) : this.player.consumeItem(item as Consumable);
 				this.updateInfo();
 			});

@@ -1,10 +1,11 @@
-import { Equipable, InventoryItem} from "../Items/Interfaces";
+import { Equipable, EquipSlot, InventoryItem } from "../Items/Interfaces";
 import Zone, { ZoneCoordinate } from "../Game Map/Zone/Zone";
 import { Weapon } from "../Items/Weapons/Weapons";
 import { Armor } from "../Items/Armor and Clothing/Armor";
 import { GameEvent } from "../Events/GameEvent";
 import StatusEffect from "../Items/Consumables/StatusEffect";
 import Consumable from "../Items/Consumables/IConsumable";
+import InventoryManager from "./InventoryManager";
 
 interface CharacterEquipment {
 	weapon: Equipable | null,
@@ -12,17 +13,6 @@ interface CharacterEquipment {
 	shirt: Equipable | null,
 	pants: Equipable | null,
 	footwear: Equipable | null,
-}
-
-function initializeEquipment(): CharacterEquipment {
-	const basicEquipment = {
-		weapon: null,
-		headwear: null,
-		shirt: null,
-		pants: null,
-		footwear: null,
-	};
-	return basicEquipment;
 }
 
 export interface CharacterStats {
@@ -41,13 +31,11 @@ export interface CharacterStats {
 abstract class Character {
 	abstract name: string;
 	stats: CharacterStats;
-	inventory: InventoryItem[];
-	equipment: CharacterEquipment;
+	inventory: InventoryManager;
 	zoneCoords?: ZoneCoordinate;
 	statusEffects: StatusEffect[] = [];
-	// TODO: rework
 	zone?: Zone;
-	constructor(health?: number, inventory?: InventoryItem[], level?: number) {
+	constructor(health?: number, level?: number) {
 		this.stats = {
 			health: {
 				current: health || 100,
@@ -60,10 +48,20 @@ abstract class Character {
 				base: 100,
 			},
 		};
-		this.inventory = inventory || [];
-		this.equipment = initializeEquipment();
+		this.inventory = new InventoryManager();
 		this.zoneCoords = undefined;
 		this.zone = undefined;
+	}
+
+	get equipment(): CharacterEquipment {
+		return this.inventory.equippedItems;
+	}
+	set equipment(eq: CharacterEquipment) {
+		this.inventory.equippedItems = eq;
+	}
+
+	get money(): number {
+		return this.inventory.currentCurrency;
 	}
 
 	get health(): number {
@@ -222,10 +220,54 @@ abstract class Character {
 	consumeItem(item: Consumable): void {
 		const effect = item.consume();
 		this.statusEffects.push(effect);
-		this.inventory = this.inventory.filter((inventoryItem) => {
-			if (inventoryItem === item) return false;
-			return true;
-		});
+		this.inventory.removeItem(item);
+	}
+
+	addItem(item: InventoryItem): void {
+		this.inventory.addItem(item);
+	}
+
+	removeItem(item: InventoryItem): void {
+		this.inventory.removeItem(item);
+	}
+
+	getInventory(): InventoryItem[] {
+		return this.inventory.getInventory();
+	}
+
+	equipItem(item: Equipable): void {
+		this.inventory.equipItem(item);
+	}
+
+	unequipItem(slot: EquipSlot): Equipable | null {
+		try {
+			const item = this.inventory.unequipItem(slot);
+			return item;
+		}
+		catch (err) {
+			console.error(err);
+			return null;
+		}
+	}
+
+	addCurrency(amount: number): void {
+		this.inventory.addCurrency(amount);
+	}
+
+	/**
+	 * 
+	 * @param amount 
+	 * @throws Throws an error if the character's InventoryManager's reduceCurrency function also
+	 * throws an error. Further handling will be necessary in higher-up calling functions.
+	 */
+	reduceCurrency(amount: number): void {
+		try {
+			this.inventory.reduceCurrency(amount);
+		}
+		catch (err) {
+			console.error(err);
+			throw err;
+		}
 	}
 
 	abstract endTurn(): void;

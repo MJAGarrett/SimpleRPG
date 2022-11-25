@@ -2,16 +2,14 @@ import { expect } from "chai";
 
 import Player from "../../../../../src/public/js/models/Characters/Player";
 import Sword from "../../../../../src/public/js/models/Items/Weapons/Sword";
-import WeaponBuilder from "../../../../../src/public/js/models/Items/Weapons/WeaponBuilder";
 import {Helmet} from "../../../../../src/public/js/models/Items/Armor and Clothing/Armor";
-import {EquipSlot} from "../../../../../src/public/js/models/Items/Interfaces";
 import Zone, { ZoneCoordinate } from "../../../../../src/public/js/models/Game Map/Zone/Zone";
 import Sinon from "sinon";
 import Swordsman from "../../../../../src/public/js/models/Characters/NPCs/Swordsman";
 import { GameEvent } from "../../../../../src/public/js/models/Events/GameEvent";
 import Game from "../../../../../src/public/js/models/Game";
+import InventoryManager from "../../../../../src/public/js/models/Characters/InventoryManager";
 
-// const should = chai.should();
 describe("Player Class", () => {
 
 	describe("Player Constructor", () => {
@@ -27,9 +25,9 @@ describe("Player Class", () => {
 			expect(player.health).to.equal(100);
 		});
 	
-		it("It should initialize inventory to an empty array", () => {
+		it("It should initialize inventory to an InventoryManager instance", () => {
 			expect(player.inventory).to.exist;
-			expect(player.inventory).to.be.an("array");
+			expect(player.inventory instanceof InventoryManager).to.be.true;
 		});
 	
 		it("it should initialize level to 1", () => {
@@ -41,131 +39,33 @@ describe("Player Class", () => {
 			expect(player.experience).to.exist;
 			expect(player.experience).to.equal(0);
 		});
-
-		it("it should initialize equipment to an empty object", () => {
-			const stuff = player.equipment;
-			expect(stuff).to.have.all.keys("headwear", "shirt", "footwear", "pants", "weapon");
-			const equipSlots: EquipSlot[] = Object.keys(stuff) as EquipSlot[];
-			for (const slot of equipSlots) {
-				expect(stuff[slot]).to.be.null;
-			}
-		});
 	});
 	
 	describe("Player methods", () => {
 	
 		let player: Player;
-		let swordBuilder: WeaponBuilder<Sword>;
 		let zone: Zone;
 	
 		beforeEach(() => {
 			player = new Player();
-			swordBuilder = new WeaponBuilder(Sword);
-		});
-	
-		describe("addItem()", () => {
-			it("It should add an inventory item to the player's inventory", () => {
-				expect(player.getInventory().length).to.be.equal(0);
-	
-				const newSword = swordBuilder.build();
-				player.addItem(newSword);
-	
-				expect(player.inventory.length).to.be.equal(1);
-				expect(player.inventory[0]).to.be.equal(newSword);
-			});
-		});
-
-		describe("removeItem()", () => {
-
-			it("it should remove an item from a player's inventory", () => {
-				const sword = new Sword();
-				player.inventory = [sword];
-
-				player.removeItem(sword);
-
-				expect(player.inventory.includes(sword)).to.be.false;
-			});
-
-			it("it should throw an error if the item is not in the player's inventory", () => {
-				const sword = new Sword();
-				expect(() => player.removeItem(sword)).to.throw;
-			});
-		});
-	
-		describe("getInventory()", () => {
-			it("It should return an array of all items in the player's inventory", () => {
-				player.inventory = [];
-				for (let i = 0; i < 10; i++) {
-					player.addItem(swordBuilder.build());
-				}
-				const inventory = player.getInventory();
-				expect(inventory).to.be.an("array");
-				expect(inventory.length).to.equal(10);
-	
-				inventory.forEach((item) => {
-					expect(item instanceof Sword).to.be.true;
-				});
-				
-			});
 		});
 
 		describe("equipItem()", () => {
+			let invStub: Sinon.SinonStub;
 
 			beforeEach(() => {
-				player.equipment = {
-					weapon: null,
-					headwear: null,
-					shirt: null,
-					pants: null,
-					footwear: null,
-				};
-				player.inventory = [];
+				invStub = Sinon.stub(player.inventory, "equipItem");
+			});
+
+			afterEach(() => {
+				invStub.restore();
 			});
 			
-			it("it should equip an item onto the player", () => {
-				expect(player.equipment.weapon).to.be.null;
-				const sword = swordBuilder.build();
-				player.equipItem(sword);
-
-				expect(player.equipment.weapon).to.equal(sword);
-			});
-
-			it("it should appropriately place weapons and armor onto the correct equipment slot", () => {
-				expect(player.equipment.weapon).to.be.null;
-				expect(player.equipment.headwear).to.be.null;
-
-				const sword = swordBuilder.build();
-				player.equipItem(sword);
-
-				expect(player.equipment.weapon).to.equal(sword);
-
-				const helmet = new Helmet();
-				player.equipItem(helmet);
-
-				expect(player.equipment.headwear).to.equal(helmet);
-
-				// TODO: Add more Armor types to test all equipment slots.
-			});
-
-			it("it should remove currently equipped items before equipping new ones and place the old \
-			items in the player's inventory", () => {
-				const oldSword = swordBuilder.setDamage(50).setQuality("fine").build();
-				player.equipItem(oldSword);
-
-				const newSword = swordBuilder.setDamage(12).setQuality("low").build();
-				player.equipItem(newSword);
-
-				expect(player.equipment.weapon).to.equal(newSword);
-				expect(player.inventory).to.include(oldSword);
-			});
-
-			it("it should remove the equipped item from the character's inventory if it is in their inventory", () => {
+			it("it should invoke the player's inventoryManager's equipItem function with the item passed", () => {
 				const sword = new Sword();
-				player.inventory.push(sword);
-
 				player.equipItem(sword);
 
-				expect(player.inventory.length).to.equal(0);
+				expect(invStub.calledWith(sword)).to.be.true;
 			});
 
 			it("it should call UIChange()", () => {
@@ -179,25 +79,33 @@ describe("Player Class", () => {
 		});
 
 		describe("unequipItem()", () => {
-			let stub: Sinon.SinonStub;
+			let UIStub: Sinon.SinonStub;
+			let invStub: Sinon.SinonStub;
 			let helmet: Helmet;
 
 			beforeEach(() => {
-				stub = Sinon.stub(player, "UIChange");
+				UIStub = Sinon.stub(player, "UIChange");
+				invStub = Sinon.stub(player.inventory, "unequipItem");
 				helmet = new Helmet();
 				player.equipment.headwear = helmet;
 			});
+			afterEach(() => {
+				UIStub.reset();
+				invStub.reset();
+			});
 			after(() => {
-				stub.restore();
+				UIStub.restore();
+				invStub.restore();
 			});
 
-			it("it should unequip an item from a character's equipment slot", () => {
+			it("it should call the player's InventoryManager's unequipItem method with the inventory slot given", () => {
 				player.unequipItem("headwear");
 
-				expect(player.equipment.headwear).to.be.null;
+				expect(invStub.calledWith("headwear")).to.be.true;
 			});
 
 			it("it should return the object in a character's equipment slot", () => {
+				invStub.returns(helmet);
 				const returned = player.unequipItem("headwear");
 
 				expect(returned).to.equal(helmet);
@@ -206,11 +114,13 @@ describe("Player Class", () => {
 			it("it should call UIChange", () => {
 				player.unequipItem("headwear");
 
-				expect(stub.calledOnce).to.be.true;
+				expect(UIStub.calledOnce).to.be.true;
 			});
 
-			it("it should throw if there is no item in the character's equipment slot", () => {
-				expect(() => player.unequipItem("footwear")).to.throw;
+			it("it should return null if the InventoryManager's unequipItem throws", () => {
+				invStub.throws();
+				const returnedVal = player.unequipItem("footwear");
+				expect(returnedVal).to.be.null;
 			});
 
 		});

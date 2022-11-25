@@ -11,6 +11,7 @@ import Consumable from "../../../../../src/public/js/models/Items/Consumables/IC
 import HealthPotion from "../../../../../src/public/js/models/Items/Consumables/Potions/HealthPotion";
 import StatusEffect, { Heal } from "../../../../../src/public/js/models/Items/Consumables/StatusEffect";
 import Sword from "../../../../../src/public/js/models/Items/Weapons/Sword";
+import { InventoryItem } from "../../../../../src/public/js/models/Items/Interfaces";
 
 describe("Character Abstract Class", () => {
 
@@ -92,7 +93,7 @@ describe("Character Abstract Class", () => {
 
 		describe("updateZoneInfo()", () => {
 
-			it("it should update a player's zone property and its zoneCoords property", () => {
+			it("it should update a character's zone property and its zoneCoords property", () => {
 				player.updateZoneInfo(tempZone, {row: 0, column: 0});
 
 				expect(player.zone).to.equal(tempZone);
@@ -255,7 +256,7 @@ describe("Character Abstract Class", () => {
 			});
 		});
 
-		describe("restore AP", () => {
+		describe("restoreAP()", () => {
 
 			it("it should restore a character's AP by an amount equal to their speed", () => {
 				player.actionPoints = -100;
@@ -274,7 +275,7 @@ describe("Character Abstract Class", () => {
 
 		describe("getAP()", () => {
 
-			it("it should return the player's current action points", () => {
+			it("it should return the character's current action points", () => {
 				const AP = player.getAP();
 
 				expect(AP).to.equal(player.actionPoints);
@@ -323,7 +324,7 @@ describe("Character Abstract Class", () => {
 
 			beforeEach(() => {
 				consumable = new HealthPotion(5, 5);
-				player.inventory = [consumable];
+				player.inventory.inventory = [consumable];
 			});
 
 			it("it should call the consumable item's consume() method", () => {
@@ -343,7 +344,7 @@ describe("Character Abstract Class", () => {
 			it("it should remove the consumable from the character's inventory", () => {
 				player.consumeItem(consumable);
 
-				expect(player.inventory.includes(consumable)).to.be.false;
+				expect(player.getInventory().includes(consumable)).to.be.false;
 			});
 		});
 
@@ -377,6 +378,126 @@ describe("Character Abstract Class", () => {
 				player.levelUp();
 
 				expect(player.level).to.equal(prevLevel + 1);
+			});
+		});
+
+		describe("addItem()", () => {
+
+			it("it should call the character's InventoryManager's addItem method with the item passed to it", () => {
+				const stub = Sinon.stub(player.inventory, "addItem");
+				const sword = new Sword();
+				player.addItem(sword);
+
+				expect(stub.calledWith(sword)).to.be.true;
+				stub.restore();
+			});
+		});
+
+		describe("removeItem()", () => {
+
+			it("it should call the character's InventoryManager's removeItem method with the item passed to it", () => {
+				const stub = Sinon.stub(player.inventory, "removeItem");
+				const sword = new Sword();
+				player.removeItem(sword);
+
+				expect(stub.calledWith(sword)).to.be.true;
+				stub.restore();
+			});
+		});
+
+		describe("getInventory()", () => {
+
+			it("it should call the character's InventoryManager's getInventory method", () => {
+				const stub = Sinon.stub(player.inventory, "getInventory");
+				player.getInventory();
+
+				expect(stub.calledOnce).to.be.true;
+				stub.restore();
+			});
+
+			it("it should return the character's current inventory", () => {
+				const fakeInventory: InventoryItem[] = [new Sword(), new Breastplate()];
+				const stub = Sinon.stub(player.inventory, "getInventory");
+				stub.returns(fakeInventory);
+
+				const returnedVal = player.getInventory();
+
+				expect(returnedVal).to.equal(fakeInventory);
+				stub.restore();
+			});
+		});
+
+		describe("equipItem()", () => {
+
+			it("it should call the character's InventoryManager's equipItem method with the given item", () => {
+				const stub = Sinon.stub(player.inventory, "equipItem");
+				const sword = new Sword();
+				player.equipItem(sword);
+
+				expect(stub.calledWith(sword)).to.be.true;
+				stub.restore();
+			});
+		});
+
+		describe("unequipItem()", () => {
+			let stub: Sinon.SinonStub;
+
+			beforeEach(() => {
+				stub = Sinon.stub(player.inventory, "unequipItem");
+			});
+
+			afterEach(() => {
+				stub.restore();
+			});
+			
+			it("it should call the character's InventoryManager's unequipItem method with the given slot", () => {
+				player.unequipItem("headwear");
+
+				expect(stub.calledWith("headwear")).to.be.true;
+			});
+
+			it("it should return null if the InventoryManager's unequipItem method throws", () => {
+				stub.throws();
+
+				const returnedVal = player.unequipItem("pants");
+				expect(returnedVal).to.be.null;
+			});
+
+			it("it should return the item returned from the InventoryManager's unequipItem method if it doesn't throw", () => {
+				const sword = new Sword();
+				stub.returns(sword);
+
+				const returnedVal = player.unequipItem("weapon");
+				expect(returnedVal).to.equal(sword);
+			});
+		});
+
+		describe("addCurrency()", () => {
+
+			it("it should call the character's InventoryManager's addCurrency method with the provided amount", () => {
+				const stub = Sinon.stub(player.inventory, "addCurrency");
+				const amnt = 1000;
+				player.addCurrency(amnt);
+
+				expect(stub.calledOnceWith(amnt)).to.be.true;
+			});
+		});
+
+		describe("reduceCurrency()", () => {
+
+			it("it should call the character's InventoryManager's reduceCurrency method with the provided amount", () => {
+				const stub = Sinon.stub(player.inventory, "reduceCurrency");
+				const amnt = 1000;
+				player.reduceCurrency(amnt);
+
+				expect(stub.calledOnceWith(amnt)).to.be.true;
+			});
+
+			it("it should throw an error if the InventoryManager's reduceCurrency method throws an error", () => {
+				const stub = Sinon.stub(player.inventory, "reduceCurrency");
+				stub.throws();
+
+				expect(() => player.reduceCurrency(100)).to.throw();
 			});
 		});
 	});

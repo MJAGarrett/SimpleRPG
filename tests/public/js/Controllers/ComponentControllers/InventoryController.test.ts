@@ -133,7 +133,7 @@ describe("InventoryController class", () => {
 			 * Setting player inventory to an empty array to
 			 * guarantee an empty map if it is cleared.
 			 */
-			player.inventory = [];
+			player.inventory.inventory = [];
 			const sword = new Sword();
 			controller.inventoryMap.set(createInventoryRow(sword), sword);
 

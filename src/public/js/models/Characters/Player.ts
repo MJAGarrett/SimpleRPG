@@ -1,6 +1,6 @@
 import { GameEvent } from "../Events/GameEvent";
 import { ZoneCoordinate } from "../Game Map/Zone/Zone";
-import { Equipable, InventoryItem } from "../Items/Interfaces";
+import { Equipable } from "../Items/Interfaces";
 import Character, {CharacterEquipment, CharacterStats} from "./Character";
 
 type EquipSlot = keyof CharacterEquipment;
@@ -70,60 +70,36 @@ class Player extends Character {
 	}
 
 	/**
-	 * Adds an item to the player's inventory.
-	 * @param item An inventory item to add to player's inventory;
+	 * Overwritten to induce a UI update.
+	 * @param item 
 	 */
-	addItem(item: InventoryItem): void {
-		this.inventory.push(item);
-	}
-
-	removeItem(item: InventoryItem): void {
-		if (this.inventory.includes(item)) {
-			this.inventory = this.inventory.filter(invItem => invItem === item ? false : true);
-		}
-		else {
-			throw new Error("Item not in inventory");
-		}
-	}
-
-	getInventory(): InventoryItem[] {
-		return this.inventory;
-	}
-
 	equipItem(item: Equipable): void {
-		if (!this.checkIfEquipSlotEmpty(item.equipSlot))
-			this.inventory.push(this.equipment[item.equipSlot] as InventoryItem);
-		this.equipment[item.equipSlot] = item;
-		if (this.inventory.includes(item)) {
-			this.removeItem(item);
-		}
-
+		this.inventory.equipItem(item);
 		this.UIChange();
 	}
 
 	/**
-	 * Removes an item from the character's given equipment slot and returns the item to either
-	 * be dropped or placed back into the character's inventory.
-	 * 
-	 * @param slot A key of CharacterEquipment representing the slot a piece of equipment will take
-	 * @returns The item that was occupying the slot given.
+	 * Overwritten to induce a UI update.
+	 * @param slot 
+	 * @returns 
 	 */
-	unequipItem(slot: EquipSlot): Equipable {
-		const temp = this.equipment[slot];
-
-		if (!temp) throw new Error(`No item in slot "${slot}"`);
-
-		else {
-			this.equipment[slot] = null;
+	unequipItem(slot: EquipSlot): Equipable | null {
+		try {
+			const item = this.inventory.unequipItem(slot);
 			this.UIChange();
-			return temp;
+			return item;
+		}
+		catch {
+			return null;
 		}
 	}
 
-	checkIfEquipSlotEmpty(slot: EquipSlot): boolean {
-		return this.equipment[slot] === null;
-	}
-
+	/**
+	 * 
+	 * @param input 
+	 * @throws Will throw an error if the player does not have a zoneCoords or does not have a zone
+	 * reference.
+	 */
 	handleInput(input: MovementCommand): void {
 		if (!this.zoneCoords || !this.zone) throw new Error("Character not placed in a zone");
 		let { row, column }: ZoneCoordinate = this.zoneCoords;
