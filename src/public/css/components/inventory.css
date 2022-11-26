@@ -27,29 +27,36 @@
 }
 
 .inv-items {
+  display: flex;
+  flex-direction: column;
   grid-area: items;
   background-color: var(--panel-background-color);
-  overflow: auto;
+  overflow: hidden;
 }
-.inv-items::-webkit-scrollbar {
+.inv-table-wrapper::-webkit-scrollbar {
   height: 1em;
   width: 1em;
 }
-.inv-items::-webkit-scrollbar-thumb {
+.inv-table-wrapper::-webkit-scrollbar-thumb {
   background-color: gainsboro;
   border-radius: .5em;
   background-clip: content-box;
   border: .25em solid transparent;
 }
 
-.inv-items::-webkit-scrollbar-thumb:hover {
+.inv-table-wrapper::-webkit-scrollbar-thumb:hover {
   background-color: #585858;
 }
 
-.inv-items::-webkit-scrollbar-track {
+.inv-table-wrapper::-webkit-scrollbar-track {
   background-color: #111;
   border-left: .2em solid white;
   box-sizing: border-box;
+}
+
+.inv-table-wrapper {
+  flex: auto;
+  overflow: auto;
 }
 
 .inv table {
@@ -82,6 +89,17 @@ th {
 
 td {
   cursor: pointer;
+}
+
+.money-and-weight {
+  padding: .25em;
+  border-top: .2em white solid;
+  font-size: 1.05em;
+  text-align: right;
+}
+
+.money-and-weight > * {
+  margin-right: 1em;
 }
 
 .inv-equipped {

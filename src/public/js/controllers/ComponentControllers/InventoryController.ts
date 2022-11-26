@@ -12,6 +12,10 @@ class InventoryController implements ComponentController {
 	componentToUpdate: HTMLElement;
 	invItems: HTMLTableElement;
 	equippedItems: HTMLTableElement;
+	moneyAndWeightSpans: {
+		money: HTMLSpanElement,
+		weight: HTMLSpanElement,
+	};
 	inventoryMap: Map<HTMLTableRowElement, InventoryItem>;
 	equippedMap: Map<HTMLTableRowElement, Equipable>;
 	statsSet: Set<HTMLTableCellElement>;
@@ -27,6 +31,10 @@ class InventoryController implements ComponentController {
 		this.componentToUpdate = this.initializeComponent();
 		this.invItems = this.componentToUpdate.querySelector(".inv-item-list tbody") as HTMLTableElement;
 		this.equippedItems = this.componentToUpdate.querySelector(".inv-equipped-item-list") as HTMLTableElement;
+		this.moneyAndWeightSpans = {
+			money: this.componentToUpdate.querySelector(".inv-items #money") as HTMLSpanElement,
+			weight: this.componentToUpdate.querySelector(".inv-items #weight") as HTMLSpanElement,
+		};
 		this.handleType = "INVENTORY_EVENT";
 	}
 	/**
@@ -70,6 +78,8 @@ class InventoryController implements ComponentController {
 				: stat.textContent = this.player.calcDefense().toString();
 		}
 		
+		this.moneyAndWeightSpans.money.textContent = `Gold: ${this.player.money}`;
+		this.moneyAndWeightSpans.weight.textContent = `Carry Weight: ${this.player.inventory.currentWeight} / ${this.player.inventory.maxCarryWeight}`;
 	}
 
 	updateInventoryMap(): void {
@@ -153,8 +163,8 @@ class InventoryController implements ComponentController {
 		inventoryArea.classList.add("inv-items");
 		const inventoryHeader = document.createElement("h3");
 		inventoryHeader.textContent = "Inventory";
-		inventoryArea.appendChild(inventoryHeader);
-		inventoryArea.appendChild(initializeTable());
+		
+		inventoryArea.append(inventoryHeader, initializeItemTable(), initMoneyAndWeightDiv());
 
 		component.appendChild(inventoryArea);
 
@@ -162,7 +172,9 @@ class InventoryController implements ComponentController {
 	}
 }
 
-function initializeTable(): HTMLTableElement {
+function initializeItemTable(): HTMLDivElement {
+	const tableWrapper = document.createElement("div");
+	tableWrapper.classList.add("inv-table-wrapper");
 	const invTable = document.createElement("table");
 	invTable.classList.add("inv-item-list");
 
@@ -180,8 +192,9 @@ function initializeTable(): HTMLTableElement {
 	head.appendChild(headRow);
 
 	invTable.append(head, document.createElement("tbody"));
+	tableWrapper.appendChild(invTable);
 
-	return invTable;
+	return tableWrapper;
 }
 
 function initializeEquipmentDisplay(): HTMLTableElement {
@@ -262,6 +275,19 @@ function initializeStatsTable(componentRef: InventoryController): HTMLTableEleme
 	statsTable.appendChild(body);
 
 	return statsTable;
+}
+
+function initMoneyAndWeightDiv(): HTMLDivElement {
+	const div = document.createElement("div");
+	div.classList.add("money-and-weight");
+	const weightSpan = document.createElement("span");
+	weightSpan.id = "weight";
+	const moneySpan = document.createElement("span");
+	moneySpan.id = "money";
+
+	div.append(weightSpan, moneySpan);
+
+	return div;
 }
 
 export default InventoryController;
