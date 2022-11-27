@@ -89,6 +89,13 @@ abstract class Character {
 		this.stats.level = level;
 	}
 
+	getBaseWeaponDamage(): number {
+		if (this.equipment.weapon === null) return 20;
+		
+		const weapon: Weapon = this.equipment.weapon as Weapon;
+		return weapon.getDamage();
+	}
+
 	levelUp() {
 		this.level++;
 	}
@@ -125,11 +132,8 @@ abstract class Character {
 	}
 
 	calcDamage(): number {
-		if (this.equipment.weapon === null) return 20;
-		const weapon: Weapon = this.equipment.weapon as Weapon;
-
+		const baseDamage = this.getBaseWeaponDamage();
 		// TODO: Implement character strength calculations when attributes are added.
-		const baseDamage = weapon.getDamage();
 		return baseDamage;
 	}
 

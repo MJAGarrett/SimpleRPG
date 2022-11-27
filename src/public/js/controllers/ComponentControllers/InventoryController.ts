@@ -1,8 +1,10 @@
 import { CharacterEquipment } from "../../models/Characters/Character";
 import Player from "../../models/Characters/Player";
 import { GameEventTypes } from "../../models/Events/GameEvent";
+import { Armor } from "../../models/Items/Armor and Clothing/Armor";
 import Consumable from "../../models/Items/Consumables/IConsumable";
 import { Equipable, InventoryItem } from "../../models/Items/Interfaces";
+import { Weapon } from "../../models/Items/Weapons/Weapons";
 import ComponentController from "../ComponentController";
 
 /**
@@ -18,7 +20,7 @@ class InventoryController implements ComponentController {
 	};
 	inventoryMap: Map<HTMLTableRowElement, InventoryItem>;
 	equippedMap: Map<HTMLTableRowElement, Equipable>;
-	statsSet: Set<HTMLTableCellElement>;
+	statsSet: Set<HTMLSpanElement>;
 	handleType: GameEventTypes;
 	player: Player;
 	visible: boolean;
@@ -94,6 +96,65 @@ class InventoryController implements ComponentController {
 				this.updateInfo();
 			});
 
+			if (isEquipable(item)) {
+				if (item instanceof Weapon) {
+
+					itemTile.addEventListener("mouseenter", () => {
+						const change = document.querySelector(".stat-change.off") as HTMLSpanElement;
+						const diff = item.getDamage() - this.player.getBaseWeaponDamage();
+
+						if (diff >= 0) {
+							change.textContent = `(+${diff.toString()})`;
+							diff === 0 ? change.style.color = "gray" : change.style.color = "green";
+						}
+						else {
+							change.textContent = `(${diff.toString()})`;
+							change.style.color = "red";
+						}
+
+						change.style.opacity = "1";
+					});
+
+					itemTile.addEventListener("mouseleave", () => {
+						const change = document.querySelector(".stat-change.off") as HTMLSpanElement;
+						change.style.opacity = "0";
+					});
+					itemTile.addEventListener("click", () => {
+						const change = document.querySelector(".stat-change.off") as HTMLSpanElement;
+						change.style.opacity = "0";
+					});
+				}
+				else if (item instanceof Armor) {
+					itemTile.addEventListener("mouseenter", () => {
+						const change = document.querySelector(".stat-change.def") as HTMLSpanElement;
+						const equipped = this.player.equipment[item.equipSlot] as Armor;
+						let diff: number;
+
+						// Equipped could still be null. Check it here.
+						equipped !== null ? diff = item.armorValue - equipped.armorValue : diff = item.armorValue;
+
+						if (diff >= 0) {
+							change.textContent = `(+${diff.toString()})`;
+							diff === 0 ? change.style.color = "gray" : change.style.color = "green";
+						}
+						else {
+							change.textContent = `(${diff.toString()})`;
+							change.style.color = "red";
+						}
+						change.style.opacity = "1";
+					});
+
+					itemTile.addEventListener("mouseleave", () => {
+						const change = document.querySelector(".stat-change.def") as HTMLSpanElement;
+						change.style.opacity = "0";
+					});
+					itemTile.addEventListener("click", () => {
+						const change = document.querySelector(".stat-change.def") as HTMLSpanElement;
+						change.style.opacity = "0";
+					});
+				}
+			}
+
 			const nameTD = document.createElement("td");
 			nameTD.textContent = item.getFullname();
 			itemTile.appendChild(nameTD);
@@ -131,7 +192,44 @@ class InventoryController implements ComponentController {
 					this.player.unequipItem(slot as keyof CharacterEquipment);
 					this.player.addItem(item);
 					this.updateInfo();
-				});	
+				});
+
+				if (item instanceof Weapon) {
+					itemRow.addEventListener("mouseenter", () => {
+						const change = document.querySelector(".stat-change.off") as HTMLSpanElement;
+						change.innerText = `(${20 - item.getDamage()})`;
+						change.style.color = "red";
+						change.style.opacity = "1";
+					});
+
+					itemRow.addEventListener("mouseleave", () => {
+						const change = document.querySelector(".stat-change.off") as HTMLSpanElement;
+						change.style.opacity = "0";
+					});
+
+					itemRow.addEventListener("click", () => {
+						const change = document.querySelector(".stat-change.off") as HTMLSpanElement;
+						change.style.opacity = "0";
+					});
+				}
+				else if (item instanceof Armor) {
+					itemRow.addEventListener("mouseenter", () => {
+						const change = document.querySelector(".stat-change.def") as HTMLSpanElement;
+						change.innerText = `(-${item.armorValue})`;
+						change.style.color = "red";
+						change.style.opacity = "1";
+					});
+
+					itemRow.addEventListener("mouseleave", () => {
+						const change = document.querySelector(".stat-change.def") as HTMLSpanElement;
+						change.style.opacity = "0";
+					});
+
+					itemRow.addEventListener("click", () => {
+						const change = document.querySelector(".stat-change.def") as HTMLSpanElement;
+						change.style.opacity = "0";
+					});
+				}
 			}
 
 			itemRow.append(itemSlot, itemName);
@@ -258,20 +356,39 @@ function initializeStatsTable(componentRef: InventoryController): HTMLTableEleme
 	const rawDamLabel = document.createElement("td");
 	rawDamLabel.textContent = "Base Damage";
 
-	const rawDam = document.createElement("td");
+	const damTD = document.createElement("td");
+
+	const rawDam = document.createElement("span");
 	rawDam.textContent = "0";
 	rawDam.dataset.offense = "true";
 	componentRef.statsSet.add(rawDam);
 
+	const damChange = document.createElement("span");
+	damChange.classList.add("stat-change", "off");
+	damChange.style.opacity = "0";
+	damChange.innerText = "0";
+	damTD.append(rawDam, damChange);
+
 	const rawDefLabel = document.createElement("td");
 	rawDefLabel.textContent = "Defense";
 
-	const rawDef = document.createElement("td");
+	const defTD = document.createElement("td");
+
+	const rawDef = document.createElement("span");
 	rawDef.textContent = "0";
 	rawDef.dataset.defense = "true";
 	componentRef.statsSet.add(rawDef);
 
-	body.append(rawDamLabel, rawDam, rawDefLabel, rawDef);
+	const defChange = document.createElement("span");
+	defChange.classList.add("stat-change", "def");
+	defChange.innerText = "0";
+	defChange.style.opacity = "0";
+	defTD.append(rawDef, defChange);
+
+	const statRow = document.createElement("tr");
+	statRow.append(rawDamLabel, damTD, rawDefLabel, defTD);
+
+	body.append(statRow);
 	statsTable.appendChild(body);
 
 	return statsTable;

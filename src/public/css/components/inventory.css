@@ -111,3 +111,7 @@ td {
   grid-area: stats;
   background-color: var(--panel-background-color);
 }
+
+.inv .stat-change {
+  margin-left: .5em;
+}
