@@ -287,7 +287,7 @@ describe("Character Abstract Class", () => {
 			});
 		});
 
-		describe("processTurn()", () => {
+		describe("startTurn()", () => {
 			let effect: StatusEffect;
 			let stub: Sinon.SinonStub;
 
@@ -315,6 +315,15 @@ describe("Character Abstract Class", () => {
 
 				player.startTurn();
 				expect(player.statusEffects.length).to.equal(0);
+			});
+
+			it("it should call the character's endTurn method if their AP is 0 or below", () => {
+				const endTurnStub = Sinon.stub(player, "endTurn");
+				player.actionPoints = -10000; // Very large negative number to counteract initial restoreAP call.
+				player.startTurn();
+
+				expect(endTurnStub.calledOnce).to.be.true;
+				endTurnStub.restore();
 			});
 		});
 

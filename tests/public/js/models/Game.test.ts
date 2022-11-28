@@ -84,13 +84,6 @@ describe("Game Class", () => {
 
 			// TODO: it should make the AI take their turns.
 
-			it("it should call itself only once if the player has > 0 AP at the start of the turn", () => {
-				game.player = new Player();
-				game.takeTurn();
-
-				expect(spy.calledOnce).to.be.true;
-			});
-
 			it("it should call notifycontroller() on each turn", () => {
 				const stub = Sinon.stub(game, "notifyController");
 				game.takeTurn();
@@ -106,27 +99,9 @@ describe("Game Class", () => {
 				stub.restore();
 			});
 
-			it("it should call itself enough times for the player to regain their AP if the player has <= 0 AP at the start of their turn", () => {
-				// Default character speed of 100.
-				game.player = new Player();
-				game.player.actionPoints = -200;
-				game.takeTurn();
-
-				expect(spy.callCount).to.equal(3);
-				spy.resetHistory();
-
-				// Character speed at 50.
-				game.player.speed = 50;
-				game.player.actionPoints = -200;
-				game.takeTurn();
-
-				expect(spy.callCount).to.equal(5);
-			});
-
-			it("it should call the player's restoreAP() method if their AP is <= 0 at the start of the turn", () => {
+			it("it should call the player's startTurn() method", () => {
 				const player = new Player();
-				const skipSpy = Sinon.spy(player, "restoreAP");
-				player.actionPoints = 0;
+				const skipSpy = Sinon.spy(player, "startTurn");
 				game.player = player;
 
 				game.takeTurn();

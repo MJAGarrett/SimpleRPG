@@ -219,6 +219,10 @@ abstract class Character {
 				return true;
 			});
 		}
+
+		if (this.getAP() <= 0) {
+			this.endTurn();
+		}
 	}
 
 	consumeItem(item: Consumable): void {
