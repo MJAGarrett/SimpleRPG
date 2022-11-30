@@ -35,6 +35,7 @@ abstract class Character {
 	zoneCoords?: ZoneCoordinate;
 	statusEffects: StatusEffect[] = [];
 	zone?: Zone;
+	takingTurn: boolean = false;
 	constructor(health?: number, level?: number) {
 		this.stats = {
 			health: {
@@ -158,7 +159,6 @@ abstract class Character {
 		this.actionPoints -= cost;
 		
 		if (this.actionPoints <= 0) {
-			this.actionPoints = this.speed + this.actionPoints;
 			this.endTurn();
 		}
 	}
@@ -193,37 +193,20 @@ abstract class Character {
 		}
 	}
 
-	getAP(): number {
-		return this.actionPoints;
-	}
-
-	/**
-	 * WIP
-	 * 
-	 * Intention: 
-	 * Processes status effects and determines whether a character has enough AP to 
-	 * start their turn. Skips turn if not.
-	 */
-	startTurn(): void {
+	preprocessTurn(): void {
 		this.restoreAP();
-		const expiredEffects: StatusEffect[] = [];
-		for (const effect of this.statusEffects) {
-			if (effect.duration > 0) {
-				effect.applyEffect(this);
-			}
-			if (effect.duration === 0) expiredEffects.push(effect);
-		}
-		if (expiredEffects.length > 0) {
-			this.statusEffects = this.statusEffects.filter((effect) => {
-				if (expiredEffects.includes(effect)) return false;
-				return true;
-			});
-		}
+		this.processStatusEffects();
 
-		if (this.getAP() <= 0) {
+		if (this.actionPoints <= 0) {
 			this.endTurn();
 		}
+		else {
+			this.takingTurn = true;
+			this.startTurn();
+		}
 	}
+
+	abstract startTurn(): void;
 
 	consumeItem(item: Consumable): void {
 		const effect = item.consume();
@@ -278,7 +261,27 @@ abstract class Character {
 		}
 	}
 
-	abstract endTurn(): void;
+	processStatusEffects(): void {
+		const expiredEffects: StatusEffect[] = [];
+
+		for (const effect of this.statusEffects) {
+			if (effect.duration > 0) {
+				effect.applyEffect(this);
+			}
+			if (effect.duration === 0) expiredEffects.push(effect);
+		}
+
+		if (expiredEffects.length > 0) {
+			this.statusEffects = this.statusEffects.filter((effect) => {
+				if (expiredEffects.includes(effect)) return false;
+				return true;
+			});
+		}
+	}
+
+	endTurn(): void {
+		this.takingTurn = false;
+	}
 }
 
 export default Character;

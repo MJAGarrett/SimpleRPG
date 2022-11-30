@@ -8,11 +8,12 @@ import HealthPotion from "./Items/Consumables/Potions/HealthPotion";
 import Sword from "./Items/Weapons/Sword";
 
 class Game {
-	currentZone?: Zone;
+	currentZone: Zone;
 	player: Player;
 	controller?: GameController;
 	constructor() {
 		this.player = new Player();
+		this.currentZone = new Zone(this);
 	}
 
 	/**
@@ -81,8 +82,10 @@ class Game {
 	}
 
 	takeTurn(): void {
-		// TODO: implement AI turns
-		this.player.startTurn();
+		for (const npc of this.currentZone.npcs) {	
+			npc.preprocessTurn();
+		}
+		this.player.preprocessTurn();
 		this.notifyController();
 	}
 }

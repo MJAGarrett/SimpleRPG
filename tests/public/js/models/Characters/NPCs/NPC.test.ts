@@ -1,4 +1,5 @@
 import { expect } from "chai";
+import Sinon from "sinon";
 import NPCGenerator from "../../../../../../src/public/js/models/Characters/NPCs/NPCGenerator";
 
 describe("NPC Abstract Class", () => {
@@ -11,7 +12,18 @@ describe("NPC Abstract Class", () => {
 		});
 	});
 
-	describe("endTurn()", () => {
-		// TODO: implement when AI is added.
+	describe("startTurn()", () => {
+		const swordsman = NPCGenerator.swordsman();
+		const AIStub = Sinon.stub(swordsman.AI, "takeTurn");
+
+		after(() => {
+			AIStub.restore();
+		});
+
+		it("it should call the NPC's AI's startTurn() method", () => {
+			swordsman.startTurn();
+
+			expect(AIStub.calledOnce).to.be.true;
+		});
 	});
 });

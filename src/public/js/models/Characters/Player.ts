@@ -146,7 +146,15 @@ class Player extends Character {
 	}
 
 	endTurn(): void {
+		this.takingTurn = false;
 		this.emitEvent(GameEvent.endTurnEvent());
+	}
+
+	startTurn(): void {
+		/**
+		 * TODO: Take away input processing for the player actor when ending a turn and restore it
+		 * when beginning a new turn.
+		 */
 	}
 }
 

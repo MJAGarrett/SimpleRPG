@@ -4,6 +4,8 @@ import Game from "../../../../src/public/js/models/Game";
 import GameController from "../../../../src/public/js/controllers/GameController";
 import { GameEvent } from "../../../../src/public/js/models/Events/GameEvent";
 import Player from "../../../../src/public/js/models/Characters/Player";
+import NPC from "../../../../src/public/js/models/Characters/NPCs/NPC";
+import Swordsman from "../../../../src/public/js/models/Characters/NPCs/Swordsman";
 
 /**
  * Fake object created to allow for testing the controller outside of a browser environment.
@@ -72,17 +74,27 @@ describe("Game Class", () => {
 		});
 
 		describe("takeTurn()", () => {
-			let spy: Sinon.SinonSpy;
 
-			beforeEach(() => {
-				spy = Sinon.spy(game, "takeTurn");
+			it("it should call preprocessTurn for each NPC in the current zone", () => {
+				const npcs: NPC[] = [];
+				const stubs: Sinon.SinonStub[] = [];
+
+				for (let i = 0; i < game.currentZone.area.length; i++) {
+					const swordsman = new Swordsman();
+					npcs.push(swordsman);
+					stubs.push(Sinon.stub(swordsman, "preprocessTurn"));
+					game.currentZone.placeCharacter(swordsman, { row: i, column: 0});
+				}
+
+				game.takeTurn();
+
+				for (const stub of stubs) {
+					stub.restore();
+				}
+				for (const stub of stubs) {
+					expect(stub.calledOnce).to.be.true;
+				}
 			});
-
-			afterEach(() => {
-				spy.restore();
-			});
-
-			// TODO: it should make the AI take their turns.
 
 			it("it should call notifycontroller() on each turn", () => {
 				const stub = Sinon.stub(game, "notifyController");
@@ -99,9 +111,9 @@ describe("Game Class", () => {
 				stub.restore();
 			});
 
-			it("it should call the player's startTurn() method", () => {
+			it("it should call the player's preprocessTurn() method", () => {
 				const player = new Player();
-				const skipSpy = Sinon.spy(player, "startTurn");
+				const skipSpy = Sinon.spy(player, "preprocessTurn");
 				game.player = player;
 
 				game.takeTurn();

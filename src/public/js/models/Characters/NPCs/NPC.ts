@@ -1,17 +1,20 @@
 import Character from "../Character";
+import NPCAI from "./AI/NPCAI";
 
 abstract class NPC extends Character {
 	abstract name: string;
+	AI: NPCAI;
 	constructor() {
 		super();
+		this.AI = new NPCAI(this);
 	}
 
 	generateDeathMessage(): string {
 		return `${this.name} has died.`;
 	}
 
-	endTurn(): void {
-		// TODO: implement when AI system is created.
+	startTurn(): void {
+		this.AI.takeTurn();
 	}
 }
 

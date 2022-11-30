@@ -273,57 +273,104 @@ describe("Character Abstract Class", () => {
 			});
 		});
 
-		describe("getAP()", () => {
-
-			it("it should return the character's current action points", () => {
-				const AP = player.getAP();
-
-				expect(AP).to.equal(player.actionPoints);
-
-				player.actionPoints = 40;
-				const newAP = player.getAP();
-
-				expect(newAP).to.equal(player.actionPoints);
-			});
-		});
-
-		describe("startTurn()", () => {
-			let effect: StatusEffect;
-			let stub: Sinon.SinonStub;
+		describe("preprocessTurn()", () => {
+			let statusEffectsStub: Sinon.SinonStub;
+			let restoreAPStub: Sinon.SinonStub;
+			let startTurnStub: Sinon.SinonStub;
 
 			beforeEach(() => {
-				effect = new Heal(5, 8);
-				stub = Sinon.stub(effect, "applyEffect");
-				player.statusEffects = [effect];
+				statusEffectsStub = Sinon.stub(player, "processStatusEffects");
+				restoreAPStub = Sinon.stub(player, "restoreAP");
+				startTurnStub = Sinon.stub(player, "startTurn");
 			});
 
 			afterEach(() => {		
-				stub.reset();
+				statusEffectsStub.reset();
+				restoreAPStub.reset();
+				startTurnStub.reset();
 			});
 
 			after(() => {
-				stub.restore();
+				statusEffectsStub.restore();
+				restoreAPStub.restore();
+				startTurnStub.restore();
 			});
 
-			it("it should process the current status effects on a character", () => {
-				player.startTurn();
-				expect(stub.calledOnceWith(player)).to.be.true;
+			it("it should call restoreAP on the character", () => {
+				player.preprocessTurn();
+				expect(restoreAPStub.calledOnce).to.be.true;
 			});
 
-			it("it should remove status effects with a duration of <= 0", () => {
-				effect.duration = 0;
-
-				player.startTurn();
-				expect(player.statusEffects.length).to.equal(0);
+			it("it should call processStatusEffects on the character", () => {
+				player.preprocessTurn();
+				expect(statusEffectsStub.calledOnce).to.be.true;
 			});
 
 			it("it should call the character's endTurn method if their AP is 0 or below", () => {
 				const endTurnStub = Sinon.stub(player, "endTurn");
 				player.actionPoints = -10000; // Very large negative number to counteract initial restoreAP call.
-				player.startTurn();
+				player.preprocessTurn();
 
 				expect(endTurnStub.calledOnce).to.be.true;
 				endTurnStub.restore();
+			});
+
+			it("it should set character's takingTurn field to true if their actionPoints are above 0", () => {
+				player.takingTurn = false;
+				player.actionPoints = 100;
+				player.preprocessTurn();
+
+				expect(player.takingTurn).to.be.true;
+			});
+
+			it("it should call the character's startTurn method if their actionPoints are above 0", () => {
+				player.actionPoints = 100;
+				player.preprocessTurn();
+
+				expect(startTurnStub.calledOnce).of.be.true;
+			});
+		});
+
+		describe("processStatusEffects()", () => {
+			let effect1: StatusEffect;
+			let effect1Stub: Sinon.SinonStub;
+			let effect2: StatusEffect;
+			let effect2Stub: Sinon.SinonStub;
+
+			beforeEach(() => {
+				effect1 = new Heal(5, 8);
+				effect1Stub = Sinon.stub(effect1, "applyEffect");
+				effect2 = new Heal(10, 1);
+				effect2Stub = Sinon.stub(effect2, "applyEffect");
+				player.statusEffects = [effect1, effect2];
+			});
+
+			afterEach(() => {		
+				effect1Stub.reset();
+				effect2Stub.reset();
+			});
+
+			after(() => {
+				effect1Stub.restore();
+				effect2Stub.restore();
+			});
+
+			it("it should apply effects with a duration greater than zero", () => {
+				effect2.duration = 0;
+
+				player.preprocessTurn();
+				expect(effect1Stub.calledOnceWith(player)).to.be.true;
+				expect(effect2Stub.calledOnce).to.be.false;
+			});
+
+			it("it should remove status effects with a duration of <= 0", () => {
+				effect2.duration = 0;
+				effect1.duration = 10;
+
+				player.preprocessTurn();
+				expect(player.statusEffects.includes(effect2)).to.be.false;
+				expect(player.statusEffects.includes(effect1)).to.be.true;
+
 			});
 		});
 
@@ -507,6 +554,16 @@ describe("Character Abstract Class", () => {
 				stub.throws();
 
 				expect(() => player.reduceCurrency(100)).to.throw();
+			});
+		});
+
+		describe("endTurn()", () => {
+
+			it("it should set the character's takingTurn field to false", () => {
+				player.takingTurn = true;
+
+				player.endTurn();
+				expect(player.takingTurn).to.be.false;
 			});
 		});
 	});

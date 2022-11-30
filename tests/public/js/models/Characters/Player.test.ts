@@ -211,6 +211,20 @@ describe("Player Class", () => {
 				expect(evt instanceof GameEvent).to.be.true;
 				expect(evt.type === "TURN_OVER").to.be.true;
 			});
+
+			it("it should turn the player's takingTurn boolean field to false", () => {
+				player.takingTurn = true;
+				player.endTurn();
+
+				expect(player.takingTurn).to.be.false;
+			});
+		});
+
+		//TODO: Add functionality to disable and re-enable player input between turns. Below tests should concern re-enabling.
+		describe("startTurn", () => {
+
+			it("it should re-enable player input");
+			
 		});
 
 		describe("UIChange()", () => {

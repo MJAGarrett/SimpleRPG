@@ -5,6 +5,8 @@ import { GameEvent } from "../../../../../../src/public/js/models/Events/GameEve
 import Tile from "../../../../../../src/public/js/models/Game Map/Tile/Tile";
 import Zone, { ZoneCoordinate } from "../../../../../../src/public/js/models/Game Map/Zone/Zone";
 import Game from "../../../../../../src/public/js/models/Game";
+import Swordsman from "../../../../../../src/public/js/models/Characters/NPCs/Swordsman";
+import Character from "../../../../../../src/public/js/models/Characters/Character";
 
 describe("Zone", () => {
 	let zone: Zone;
@@ -37,6 +39,7 @@ describe("Zone", () => {
 	});
 
 	describe("Methods", () => {
+
 		describe("getTile()", () => {
 			it("it should return a reference to the tile corresponding to it's input", () => {
 				const tile: Tile = zone.getTile({row: 0, column: 0});
@@ -160,6 +163,29 @@ describe("Zone", () => {
 				zone.placeCharacter(player, coords);
 				expect(spy.calledOnceWith(zone, coords)).to.be.true;
 			});
+
+			it("it should add a reference to the character to the zone's npcs set if the character is an NPC", () => {
+				const NPC = new Swordsman();
+				zone.npcs = new Set<Character>();
+
+				zone.placeCharacter(NPC, coords);
+
+				expect(zone.npcs.has(NPC)).to.be.true;
+			});
+
+			it("it should not add a reference to the character to the npcs set if the character is the player", () => {
+				zone.npcs = new Set<Character>();
+
+				zone.placeCharacter(player, coords);
+				expect(zone.npcs.has(player)).to.be.false;
+			});
+
+			it("it should save a reference to the player on the zone if the character is the player", () => {
+				zone.player = null;
+
+				zone.placeCharacter(player, coords);
+				expect(zone.player === player).to.be.true;
+			});
 		});
 
 		describe("removeCharacter()", () => {
@@ -176,10 +202,26 @@ describe("Zone", () => {
 			});
 
 			/**
-			 * This does not remove references from the Character being removed to the zone itself.
+			 * This does not remove references to the zone from the character being removed.
 			 * This is because the Character reference will be unreachable from the root, and thus
 			 * able to be garbage collected.
 			 */
+
+			it("it should remove the character from its npcs set if the character is an npc", () => {
+				const NPC = new Swordsman();
+				zone.placeCharacter(NPC, {row: 0, column: 2});
+
+				zone.removeCharacter(NPC);
+
+				expect(zone.npcs.has(NPC)).to.be.false;
+			});
+
+			it("it should set the zone's player field to null if the character is the player", () => {
+				expect(zone.player).to.not.be.null;
+				zone.removeCharacter(player);
+
+				expect(zone.player).to.be.null;
+			});
 		});
 
 		describe("emitEvent()", () => {

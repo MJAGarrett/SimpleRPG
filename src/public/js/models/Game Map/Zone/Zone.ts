@@ -2,6 +2,8 @@ import Character from "../../Characters/Character";
 import Tile from "../Tile/Tile";
 import { GameEvent } from "../../Events/GameEvent";
 import Game from "../../Game";
+import NPC from "../../Characters/NPCs/NPC";
+import Player from "../../Characters/Player";
 
 interface ZoneCoordinate {
 	row: number,
@@ -10,7 +12,9 @@ interface ZoneCoordinate {
 
 class Zone {
 	area: Array<Array<Tile>>;
+	npcs: Set<Character> = new Set<Character>();
 	game: Game;
+	player: Player | null = null;
 	constructor(game: Game) {
 		const area = new Array(10);
 
@@ -28,8 +32,9 @@ class Zone {
 	/**
 	 * Returns a reference to the tile at the coordinates given.
 	 * 
-	 * Coords = {row: 0-7, column: 0-7};
+	 * Coords = {row: 0-9, column: 0-9};
 	 * @param coords
+	 * @throws Will throw an error if row or column coords are out of bounds.
 	 * @returns A tile in the game zone.
 	 */
 	getTile(coords: ZoneCoordinate): Tile {
@@ -62,11 +67,25 @@ class Zone {
 	placeCharacter(char: Character, coords: ZoneCoordinate): void {
 		this.getTile(coords).addCharacter(char);
 		char.updateZoneInfo(this, coords);
+
+		if (char instanceof NPC) {
+			this.npcs.add(char);
+		}
+		else if (char instanceof Player) {
+			this.player = char;
+		}
 	}
 
 	removeCharacter(char: Character): void {
 		const tile = this.getTile(char.zoneCoords as ZoneCoordinate);
 		tile.removeCharacter();
+
+		if (char instanceof NPC && this.npcs.has(char)) {
+			this.npcs.delete(char);
+		}
+		else if (char instanceof Player) {
+			this.player = null;
+		}
 	}
 
 	emitEvent(evt: GameEvent): void {
